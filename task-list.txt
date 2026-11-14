@@ -1,0 +1,71 @@
+MATS-OFFICE - CONTENT TASK LIST
+================================
+Things to gather so the site can be built. Tick [x] as you go.
+START WITH: info + photos for 2-3 projects, plus the vibe (section 6).
+
+
+1. PROJECT INFO  (src/data/aiseProjects.json, src/data/eeProjects.json)
+-----------------------------------------------------------------------
+For each project, write:
+  - Name + one-line pitch
+  - What it does + your role (solo / team / class / club), 2-4 sentences
+  - Tech or parts used (languages, frameworks, MCUs, tools)
+  - Result / outcome (numbers if possible)
+  - Links (GitHub, demo, video, write-up) - optional
+  - Dates
+  - Anything private / can't be linked
+
+Software (monitor station):
+  [ ] Cold Emailer
+  [ ] Concrete Model
+  [ ] Squat Tracker
+
+Hardware (workbench station):
+  [ ] FSM Detector
+  [ ] Global Reader boards
+  [ ] Spike Robot
+  [ ] Sunstang board
+
+  [ ] Confirm the project list - anything missing or to remove?
+
+
+2. PHOTOS  (public/images/projects/)
+------------------------------------
+JPG or WebP, ~1600px on the long side.
+  [ ] Hardware: 1-3 clear photos of each board/robot (plain background ideal)
+  [ ] Software: screenshots of each app (become the monitor "windows")
+  [ ] Optional: photo of yourself for the Door / About section
+
+
+3. 3D MODELS  (public/models/, .glb format) - OPTIONAL
+------------------------------------------------------
+Basic props (desk, monitor, shelves, turntable, crate, rackets, guitar)
+will be modelled in code - nothing needed for those.
+  [ ] Export your PCBs from KiCad as .glb / .step (FSM Detector, Global Reader, Sunstang)
+  [ ] CAD model of Spike Robot (if you have one)
+  [ ] Optional: a specific guitar model, or free .glb from Sketchfab / Poly Pizza
+
+
+4. HOBBIES  (src/data/hobbies.json, src/data/records.json)
+----------------------------------------------------------
+  [x] Record list (records.json - done; covers can be fetched automatically)
+  [ ] Optional: add notes to favourite records ("note" field)
+  [ ] Guitar: make / model / colour
+  [ ] Tennis: racket brand / colour + short blurb
+  [ ] 1-2 sentence blurb for each hobby
+
+
+5. ACCOUNTS & SETUP
+-------------------
+  [ ] Now Playing: Spotify or Last.fm? (Last.fm = API key + username, easiest)
+  [ ] Domain name for public/CNAME
+  [ ] GitHub repo name (for the deploy workflow)
+  [ ] Contact links: email, LinkedIn, GitHub, resume PDF
+  [ ] Fix git: run `git init` inside mats-office, and check the stray .git
+      in C:\Users\Mats before removing it
+
+
+6. LOOK & FEEL
+--------------
+  [ ] Vibe: cozy/warm, clean/minimal, retro, or other
+  [ ] Reference sites or images you like
