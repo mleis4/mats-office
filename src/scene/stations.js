@@ -127,7 +127,7 @@ const GLOBALREADER_POSITION = [-0.78, BENCH_TOP_Y, BENCH.z + 0.15];
 // board's origin is 0.011 above its underside at the scale it is shown at.
 const FSM_POSITION = [-0.02, BENCH_TOP_Y + BENCH_MAT_THICKNESS + 0.011, BENCH.z + 0.12];
 const SUNSTANG_POSITION = [0.74, BENCH_TOP_Y + BENCH_MAT_THICKNESS, BENCH.z + 0.07];
-const ROBOT_POSITION = [-0.45, SHELF_TOP_Y, SHELF.z]; // centred on the shelf's depth, wheels and all
+const ROBOT_POSITION = [-0.6, SHELF_TOP_Y, SHELF.z]; // centred on the shelf's depth, wheels and all
 // Crate and turntable are both centred on the cabinet's depth
 const CRATE_POSITION = [CABINET.x, CABINET_TOP_Y, CABINET.z - 0.4];
 const TURNTABLE_POSITION = [CABINET.x, CABINET_TOP_Y, CABINET.z + 0.4];

@@ -54,7 +54,8 @@ const DEMO_SEQUENCE = '000110100101'; // shows Z rising on 0011 and falling on 0
 // ---------------------------------------------------------------------------
 function SilkLabel({ text, position, width = 0.16, height = 0.05, fontSizeRatio = 0.62 }) {
   const texture = useMemo(() => {
-    const canvasWidth = 256;
+    // Wide labels get more pixels, so the board title stays as sharp as the short labels
+    const canvasWidth = Math.max(256, Math.round(width * 1600));
     const canvasHeight = Math.round((canvasWidth * height) / width);
     const canvas = document.createElement('canvas');
     canvas.width = canvasWidth;
@@ -190,6 +191,259 @@ function SlideSwitch({ position, value, onToggle }) {
 }
 
 // ---------------------------------------------------------------------------
+// Board details: everything below is decoration that makes the PCB read as a
+// real dev board (chip leads, traces, passives, connectors, mounting holes).
+// None of it is interactive.
+// ---------------------------------------------------------------------------
+const FPGA_CENTRE = [-0.2, -0.05];   // x, z of the FPGA chip
+const FPGA_SIZE = 0.26;
+const FPGA_LEADS_PER_SIDE = 11;
+const FPGA_RIGHT_EDGE_X = FPGA_CENTRE[0] + FPGA_SIZE / 2;
+
+const HEADER_PIN_COUNT = 20;
+const HEADER_PIN_PITCH = 0.05;
+const HEADER_FIRST_PIN_X = -0.48;
+const HEADER_ROW_ZS = [-0.33, -0.305];
+
+const MOUNTING_HOLE_INSET = 0.045;   // hole centre, measured from the board edges
+const TRACE_WIDTH = 0.007;
+const TRACE_HEIGHT = 0.0012;
+
+const TRACE_COLOUR = '#2a5796';
+const CHIP_BLACK = '#1a1a1a';
+const SOLDER_SILVER = '#c9ccd1';
+const GOLD = '#d4af37';
+
+// Each trace leaves the FPGA's right edge at startZ, runs to the part's x,
+// then turns to reach the part. The order keeps the traces from crossing.
+const TRACE_ROUTES = [
+  { startZ: -0.13, endX: 0.2, endZ: -0.15 },   // Q1 LED
+  { startZ: -0.115, endX: 0.3, endZ: -0.15 },  // Q2 LED
+  { startZ: -0.1, endX: 0.4, endZ: -0.15 },    // Q3 LED
+  { startZ: -0.085, endX: 0.5, endZ: -0.15 },  // Z LED
+  { startZ: 0.06, endX: 0.12, endZ: 0.12 },    // X switch
+  { startZ: 0.04, endX: 0.3, endZ: 0.12 },     // CLK button
+  { startZ: 0.02, endX: 0.46, endZ: 0.12 },    // RST button
+];
+
+// Surface-mount resistors (black) and capacitors (tan): [x, z, turned 90 degrees]
+const RESISTOR_SPOTS = [
+  [0.2, -0.225, false], [0.3, -0.225, false], [0.4, -0.225, false], [0.5, -0.225, false],
+  [0.21, 0.02, true], [0.38, 0.0, true],
+];
+const CAPACITOR_SPOTS = [
+  [-0.035, -0.035, true], [-0.38, -0.1, true], [-0.38, 0.0, true],
+  [-0.12, 0.115, false], [-0.2, -0.215, false], [-0.27, 0.17, true],
+];
+
+function Trace({ startZ, endX, endZ }) {
+  const runLength = endX - FPGA_RIGHT_EDGE_X;
+  const turnLength = Math.abs(endZ - startZ);
+  const traceY = BOARD_TOP + TRACE_HEIGHT / 2;
+
+  return (
+    <group>
+      <mesh position={[FPGA_RIGHT_EDGE_X + runLength / 2, traceY, startZ]}>
+        <boxGeometry args={[runLength + TRACE_WIDTH, TRACE_HEIGHT, TRACE_WIDTH]} />
+        <meshStandardMaterial color={TRACE_COLOUR} roughness={0.4} />
+      </mesh>
+      <mesh position={[endX, traceY, (startZ + endZ) / 2]}>
+        <boxGeometry args={[TRACE_WIDTH, TRACE_HEIGHT, turnLength]} />
+        <meshStandardMaterial color={TRACE_COLOUR} roughness={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+function SurfaceMountPart({ x, z, isTurned, colour }) {
+  return (
+    <group position={[x, BOARD_TOP, z]} rotation={[0, isTurned ? Math.PI / 2 : 0, 0]}>
+      {/* Solder pads at both ends, then the part body on top */}
+      <mesh position={[0, 0.003, 0]}>
+        <boxGeometry args={[0.04, 0.006, 0.018]} />
+        <meshStandardMaterial color={SOLDER_SILVER} metalness={0.8} roughness={0.35} />
+      </mesh>
+      <mesh position={[0, 0.006, 0]}>
+        <boxGeometry args={[0.026, 0.012, 0.019]} />
+        <meshStandardMaterial color={colour} roughness={0.6} />
+      </mesh>
+    </group>
+  );
+}
+
+function MountingHole({ x, z }) {
+  return (
+    <group position={[x, BOARD_TOP + 0.0008, z]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh>
+        <ringGeometry args={[0.014, 0.028, 24]} />
+        <meshStandardMaterial color={GOLD} metalness={0.9} roughness={0.35} />
+      </mesh>
+      <mesh>
+        <circleGeometry args={[0.014, 24]} />
+        <meshBasicMaterial color="#0c0c0c" />
+      </mesh>
+    </group>
+  );
+}
+
+function FpgaChip() {
+  const [chipX, chipZ] = FPGA_CENTRE;
+  const leadOffsets = useMemo(() => {
+    const leadSpan = FPGA_SIZE - 0.04;
+    return Array.from(
+      { length: FPGA_LEADS_PER_SIDE },
+      (_, leadIndex) => -leadSpan / 2 + (leadIndex * leadSpan) / (FPGA_LEADS_PER_SIDE - 1),
+    );
+  }, []);
+  const leadReach = FPGA_SIZE / 2 + 0.006;
+
+  return (
+    <group position={[chipX, BOARD_TOP, chipZ]}>
+      <mesh position={[0, 0.012, 0]}>
+        <boxGeometry args={[FPGA_SIZE, 0.024, FPGA_SIZE]} />
+        <meshStandardMaterial color={CHIP_BLACK} roughness={0.7} />
+      </mesh>
+      {/* Raised centre of the package */}
+      <mesh position={[0, 0.0245, 0]}>
+        <boxGeometry args={[FPGA_SIZE - 0.03, 0.003, FPGA_SIZE - 0.03]} />
+        <meshStandardMaterial color="#232323" roughness={0.5} />
+      </mesh>
+      {/* Pin 1 marker */}
+      <mesh position={[-FPGA_SIZE / 2 + 0.035, 0.0265, FPGA_SIZE / 2 - 0.035]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.009, 16]} />
+        <meshBasicMaterial color="#8a8a8a" />
+      </mesh>
+
+      {/* Leads on all four sides */}
+      {leadOffsets.map((leadOffset) => (
+        <group key={leadOffset}>
+          {[-1, 1].map((side) => (
+            <group key={side}>
+              <mesh position={[side * leadReach, 0.004, leadOffset]}>
+                <boxGeometry args={[0.02, 0.008, 0.01]} />
+                <meshStandardMaterial color={SOLDER_SILVER} metalness={0.85} roughness={0.3} />
+              </mesh>
+              <mesh position={[leadOffset, 0.004, side * leadReach]}>
+                <boxGeometry args={[0.01, 0.008, 0.02]} />
+                <meshStandardMaterial color={SOLDER_SILVER} metalness={0.85} roughness={0.3} />
+              </mesh>
+            </group>
+          ))}
+        </group>
+      ))}
+
+      <SilkLabel text="FPGA" position={[0, 0.0265, -0.01]} width={0.16} height={0.06} />
+    </group>
+  );
+}
+
+function BoardDetails() {
+  const headerPinXs = useMemo(
+    () => Array.from({ length: HEADER_PIN_COUNT }, (_, pinIndex) => HEADER_FIRST_PIN_X + pinIndex * HEADER_PIN_PITCH),
+    [],
+  );
+  const headerCentreX = HEADER_FIRST_PIN_X + ((HEADER_PIN_COUNT - 1) * HEADER_PIN_PITCH) / 2;
+  const headerCentreZ = (HEADER_ROW_ZS[0] + HEADER_ROW_ZS[1]) / 2;
+  const holeX = BOARD_WIDTH / 2 - MOUNTING_HOLE_INSET;
+  const holeZ = BOARD_DEPTH / 2 - MOUNTING_HOLE_INSET;
+
+  return (
+    <group>
+      {/* ---------------- Chips ---------------- */}
+      <FpgaChip />
+
+      {/* Shift register chip, with a strip of leads down each long side */}
+      <mesh position={[-0.47, BOARD_TOP + 0.01, -0.05]}>
+        <boxGeometry args={[0.08, 0.02, 0.17]} />
+        <meshStandardMaterial color={CHIP_BLACK} roughness={0.7} />
+      </mesh>
+      {[-1, 1].map((side) => (
+        <mesh key={side} position={[-0.47 + side * 0.046, BOARD_TOP + 0.004, -0.05]}>
+          <boxGeometry args={[0.014, 0.008, 0.15]} />
+          <meshStandardMaterial color={SOLDER_SILVER} metalness={0.85} roughness={0.3} />
+        </mesh>
+      ))}
+      <SilkLabel text="U1" position={[-0.3, BOARD_TOP + 0.001, 0.105]} width={0.06} height={0.03} />
+      <SilkLabel text="U2" position={[-0.47, BOARD_TOP + 0.001, 0.06]} width={0.06} height={0.03} />
+
+      {/* ---------------- Traces and passives ---------------- */}
+      {TRACE_ROUTES.map((route) => <Trace key={route.startZ} {...route} />)}
+      {RESISTOR_SPOTS.map(([x, z, isTurned]) => (
+        <SurfaceMountPart key={`${x},${z}`} x={x} z={z} isTurned={isTurned} colour="#2b2622" />
+      ))}
+      {CAPACITOR_SPOTS.map(([x, z, isTurned]) => (
+        <SurfaceMountPart key={`${x},${z}`} x={x} z={z} isTurned={isTurned} colour="#b89a6a" />
+      ))}
+
+      {/* Crystal oscillator */}
+      <mesh position={[-0.2, BOARD_TOP + 0.011, 0.17]}>
+        <boxGeometry args={[0.075, 0.022, 0.05]} />
+        <meshStandardMaterial color={SOLDER_SILVER} metalness={0.9} roughness={0.25} />
+      </mesh>
+      <SilkLabel text="OSC" position={[-0.2, BOARD_TOP + 0.001, 0.225]} width={0.08} height={0.032} />
+
+      {/* ---------------- Power and USB, on the left edge ---------------- */}
+      {/* Barrel jack */}
+      <mesh position={[-0.54, BOARD_TOP + 0.045, -0.2]}>
+        <boxGeometry args={[0.13, 0.09, 0.09]} />
+        <meshStandardMaterial color="#141414" roughness={0.6} />
+      </mesh>
+      <mesh position={[-0.606, BOARD_TOP + 0.045, -0.2]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.026, 0.026, 0.004, 20]} />
+        <meshStandardMaterial color="#050505" roughness={0.4} />
+      </mesh>
+      {/* Bulk capacitor, voltage regulator and power LED */}
+      <mesh position={[-0.42, BOARD_TOP + 0.03, -0.2]}>
+        <cylinderGeometry args={[0.025, 0.025, 0.06, 20]} />
+        <meshStandardMaterial color="#20242b" roughness={0.45} />
+      </mesh>
+      <mesh position={[-0.42, BOARD_TOP + 0.0605, -0.2]}>
+        <cylinderGeometry args={[0.022, 0.022, 0.001, 20]} />
+        <meshStandardMaterial color={SOLDER_SILVER} metalness={0.9} roughness={0.3} />
+      </mesh>
+      <mesh position={[-0.335, BOARD_TOP + 0.01, -0.225]}>
+        <boxGeometry args={[0.06, 0.02, 0.045]} />
+        <meshStandardMaterial color={CHIP_BLACK} roughness={0.7} />
+      </mesh>
+      <mesh position={[-0.39, BOARD_TOP + 0.005, -0.15]}>
+        <boxGeometry args={[0.02, 0.01, 0.012]} />
+        <meshStandardMaterial color={LED_GREEN} emissive={LED_GREEN} emissiveIntensity={1.5} toneMapped={false} />
+      </mesh>
+      <SilkLabel text="5V" position={[-0.42, BOARD_TOP + 0.001, -0.253]} width={0.06} height={0.032} />
+
+      {/* USB socket */}
+      <mesh position={[-0.555, BOARD_TOP + 0.022, 0.17]}>
+        <boxGeometry args={[0.1, 0.044, 0.09]} />
+        <meshStandardMaterial color={SOLDER_SILVER} metalness={0.9} roughness={0.3} />
+      </mesh>
+      <mesh position={[-0.606, BOARD_TOP + 0.022, 0.17]}>
+        <boxGeometry args={[0.002, 0.026, 0.07]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.5} />
+      </mesh>
+      <SilkLabel text="USB" position={[-0.53, BOARD_TOP + 0.001, 0.245]} width={0.08} height={0.032} />
+
+      {/* ---------------- Two-row pin header along the back edge ---------------- */}
+      <mesh position={[headerCentreX, BOARD_TOP + 0.01, headerCentreZ]}>
+        <boxGeometry args={[HEADER_PIN_COUNT * HEADER_PIN_PITCH, 0.02, 0.055]} />
+        <meshStandardMaterial color="#121212" roughness={0.7} />
+      </mesh>
+      {HEADER_ROW_ZS.map((rowZ) => headerPinXs.map((pinX) => (
+        <mesh key={`${pinX},${rowZ}`} position={[pinX, BOARD_TOP + 0.035, rowZ]}>
+          <boxGeometry args={[0.01, 0.07, 0.01]} />
+          <meshStandardMaterial color={GOLD} metalness={0.9} roughness={0.3} />
+        </mesh>
+      )))}
+      <SilkLabel text="GPIO" position={[0, BOARD_TOP + 0.001, -0.255]} width={0.1} height={0.032} />
+
+      {/* ---------------- Mounting holes ---------------- */}
+      {[-1, 1].map((sideX) => [-1, 1].map((sideZ) => (
+        <MountingHole key={`${sideX},${sideZ}`} x={sideX * holeX} z={sideZ * holeZ} />
+      )))}
+    </group>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // MiniStateMap: eight states in two rows (Z = 0 on top, Z = 1 below),
 // with the current state highlighted
 // ---------------------------------------------------------------------------
@@ -311,12 +565,6 @@ export default function FsmDetector({ showPanel = true, panelPosition = [0, 0.48
     clearTimeout(pressTimerRef.current);
   }, []);
 
-  // Header pins along the back edge of the board, for looks
-  const headerPinXs = useMemo(
-    () => Array.from({ length: 20 }, (_, pinIndex) => -0.48 + pinIndex * 0.05),
-    [],
-  );
-
   const panelButtonStyle = {
     flex: 1,
     padding: '6px 0',
@@ -335,26 +583,8 @@ export default function FsmDetector({ showPanel = true, panelPosition = [0, 0.48
         <meshStandardMaterial color={PCB_COLOUR} roughness={0.55} />
       </RoundedBox>
 
-      {/* FPGA chip */}
-      <mesh position={[-0.2, BOARD_TOP + 0.012, -0.05]}>
-        <boxGeometry args={[0.26, 0.024, 0.26]} />
-        <meshStandardMaterial color="#1a1a1a" roughness={0.7} />
-      </mesh>
-      <SilkLabel text="FPGA" position={[-0.2, BOARD_TOP + 0.0255, -0.05]} width={0.16} height={0.06} />
-
-      {/* Shift register chip */}
-      <mesh position={[-0.47, BOARD_TOP + 0.01, -0.05]}>
-        <boxGeometry args={[0.08, 0.02, 0.17]} />
-        <meshStandardMaterial color="#1a1a1a" roughness={0.7} />
-      </mesh>
-
-      {/* Header pins */}
-      {headerPinXs.map((pinX) => (
-        <mesh key={pinX} position={[pinX, BOARD_TOP + 0.03, -0.33]}>
-          <boxGeometry args={[0.012, 0.06, 0.012]} />
-          <meshStandardMaterial color="#d4af37" metalness={0.9} roughness={0.3} />
-        </mesh>
-      ))}
+      {/* Chips, traces, passives, connectors, header and mounting holes */}
+      <BoardDetails />
 
       {/* Board title */}
       <SilkLabel text="MOORE FSM / 0011 SET  0101 CLR" position={[0.05, BOARD_TOP + 0.001, 0.31]} width={0.9} height={0.05} />

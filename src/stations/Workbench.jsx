@@ -34,7 +34,7 @@ const DESK_LAMP_URL = '/models/desk_lamp_low_poly.glb';
 const TROPHY_URL = '/models/trophy.glb';
 const FLAGLET_URL = '/models/flaglet.glb';
 
-const OSCILLOSCOPE_LEVELLING = [0.143, 0, 0]; // radians; undoes the model's 8 degree tilt
+const OSCILLOSCOPE_LEVELLING = [-(2*Math.PI)/45+0.12, 0, 0]; // radians; undoes the model's 8 degree tilt
 
 const EQUIPMENT_CREAM = '#e6e2d8';
 const MAT_BLUE = '#3e8edb';
@@ -125,16 +125,16 @@ export default function Workbench() {
 
       {/* Test equipment on the wall shelf */}
       {/* The scope model is tipped back on its stand; levelling it lets it sit flat on the shelf */}
-      <ModelProp url={OSCILLOSCOPE_URL} depth={SHELF.depth} modelRotation={OSCILLOSCOPE_LEVELLING} position={[0.38, SHELF_TOP_Y, SHELF.z]} />
+      <ModelProp url={OSCILLOSCOPE_URL} depth={SHELF.depth} modelRotation={OSCILLOSCOPE_LEVELLING} position={[0.38, SHELF_TOP_Y-0.05, SHELF.z]} />
       <BenchSupply position={[0.86, SHELF_TOP_Y, SHELF.z]} />
 
       {/* Trophy and flaglet from RoboCup, beside the robot. The trophy stands at
           the back of the shelf and the flaglet at the front, so they don't touch. */}
-      <ModelProp url={TROPHY_URL} height={0.3} position={[robotPosition[0] - 0.48, SHELF_TOP_Y, SHELF.z - 0.05]} />
-      <ModelProp url={FLAGLET_URL} height={0.28} position={[robotPosition[0] - 0.34, SHELF_TOP_Y, SHELF.z + 0.1]} />
+      <ModelProp url={TROPHY_URL} height={0.3} position={[robotPosition[0] + 0.28, SHELF_TOP_Y, SHELF.z - 0.05]} />
+      <ModelProp url={FLAGLET_URL} height={0.28} position={[robotPosition[0] - 0.24, SHELF_TOP_Y, SHELF.z ]} rotation={[0,Math.PI/4,0  ]} />
 
       {/* ---------------- The projects ---------------- */}
-      <SpikeRobot position={robotPosition} />
+      <SpikeRobot position={robotPosition} rotation={[0,Math.PI/2,0]} />
       <GlobalReaderBoards position={OBJECTS.globalreader.position} rotation={[0, 0.35, 0]} />
       <SunstangBoard position={OBJECTS['sunstang-board'].position} rotation={[0, -0.18, 0]} />
 
