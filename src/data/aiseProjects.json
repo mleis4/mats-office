@@ -1,0 +1,47 @@
+[
+  {
+    "id": "cold-emailer",
+    "name": "SuperAngel500 Job Applicator",
+    "pitch": "A Python CLI that turned a list of ~680 Estonian startups into personalized job applications.",
+    "role": "Solo project",
+    "summary": "A Python command-line tool that scraped the Superangel 500 list (about 680 Estonian startups) from its JSON endpoint and split the companies into EE, AISE and both lead lists by industry. For each lead it shows company metrics, fills a template with the company's industry and growth, and sends a personalized email with my resume attached over Gmail SMTP. A CSV tracker follows each application from Applied to Interview, Rejected or Accepted.",
+    "tech": ["Python", "requests", "pandas", "smtplib"],
+    "results": [],
+    "links": [{ "label": "GitHub", "url": "https://github.com/mleis4/SuperAngel500-Job-Applicator" }],
+    "dates": "Feb 2026",
+    "images": ["/images/superangel-thumb.png"],
+    "station": "desk",
+    "object": "ColdEmailerWindow",
+    "private": false
+  },
+  {
+    "id": "concrete-model",
+    "name": "Concrete Strength Predictor",
+    "pitch": "Predicting how strong a concrete mix will be from its recipe and age.",
+    "role": "DS3000 group project (Group 07)",
+    "summary": "Predicts concrete compressive strength from the mix recipe and age, using an OpenML dataset of 1,030 mixes split 618 / 206 / 206. I wrote the Stage 2 XGBoost model: the hyperparameter search, the pipeline and the evaluation.",
+    "tech": ["Python", "scikit-learn", "XGBoost", "pandas", "Jupyter"],
+    "results": ["Validation RMSE 4.9 MPa, R² 0.91", "Best baseline (multiple linear regression): 11.0 MPa"],
+    "links": [],
+    "dates": "Fall 2026",
+    "images": [],
+    "station": "desk",
+    "object": "ConcreteModelWindow",
+    "private": true
+  },
+  {
+    "id": "squat-tracker",
+    "name": "Squat Tracker",
+    "pitch": "Computer vision that traces a barbell's path and scores every rep.",
+    "role": "Built with a partner",
+    "summary": "A computer-vision form analyzer. A custom YOLOv8n-pose model finds two barbell keypoints with no markers, and their midpoint traces the bar path in real time. Rep segmentation scores each rep by how straight the bar path is.",
+    "tech": ["Python", "Ultralytics YOLOv8", "OpenCV", "Roboflow", "Google Colab"],
+    "results": ["Pose mAP50 99%", "Pose mAP50-95 95.7%"],
+    "links": [],
+    "dates": "Feb 2024 – present",
+    "images": ["/images/squat-tracker-web.jpg"],
+    "station": "desk",
+    "object": "SquatTrackerWindow",
+    "private": false
+  }
+]

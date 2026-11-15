@@ -1,0 +1,44 @@
+[
+  {
+    "id": "records",
+    "name": "Record crate",
+    "blurb": "Thirteen albums on vinyl, from King Crimson in 1969 to Denzel Curry in 2022. Scroll to flip through them, then click one to pull it out and read its story.",
+    "object": "RecordCrate",
+    "images": []
+  },
+  {
+    "id": "turntable",
+    "name": "Turntable",
+    "blurb": "Shows what I'm listening to right now, pulled from Last.fm. When nothing is playing, it puts on a record from the crate.",
+    "object": "Turntable",
+    "images": []
+  },
+  {
+    "id": "guitar",
+    "name": "Guitar",
+    "blurb": "My acoustic guitar. More about it soon.",
+    "object": "Guitar",
+    "images": []
+  },
+  {
+    "id": "tennis",
+    "name": "Tennis",
+    "blurb": "Intermediate/advanced player. I coached 50+ students aged 4 to 60+ at Johnston Tennis Academy from 2022 to 2024. My racket is a Head Speed Pro 2022.",
+    "object": "TennisRackets",
+    "images": []
+  },
+  {
+    "id": "skiing",
+    "name": "Skiing",
+    "blurb": "My skis, under a Ski The East sign. More about it soon.",
+    "object": "Skis",
+    "images": []
+  },
+  {
+    "id": "sunstang-poster",
+    "name": "Sunstang poster",
+    "blurb": "Sunstang is Western University's solar car project, running since 1991. I'm on the Driver Controls subteam. See the board on the workbench.",
+    "object": "Poster",
+    "images": ["/textures/sunstang_poster.jpg"]
+  }
+]

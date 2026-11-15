@@ -1,15 +1,15 @@
 [
-  { "title": "In the Court of the Crimson King", "artist": "King Crimson", "year": 1969, "edition": "", "note": "" },
-  { "title": "Hunky Dory", "artist": "David Bowie", "year": 1971, "edition": "", "note": "" },
-  { "title": "The Dark Side of the Moon", "artist": "Pink Floyd", "year": 1973, "edition": "50th Anniversary", "note": "" },
-  { "title": "Unknown Pleasures", "artist": "Joy Division", "year": 1979, "edition": "", "note": "" },
-  { "title": "Setting Sons", "artist": "The Jam", "year": 1979, "edition": "", "note": "" },
-  { "title": "Hatful of Hollow", "artist": "The Smiths", "year": 1984, "edition": "", "note": "" },
-  { "title": "Meat Is Murder", "artist": "The Smiths", "year": 1985, "edition": "", "note": "" },
-  { "title": "Foo Fighters", "artist": "Foo Fighters", "year": 1995, "edition": "", "note": "" },
-  { "title": "Is This It", "artist": "The Strokes", "year": 2001, "edition": "US cover", "note": "" },
-  { "title": "Sonic Highways", "artist": "Foo Fighters", "year": 2014, "edition": "", "note": "" },
-  { "title": "Kids See Ghosts", "artist": "Kids See Ghosts", "year": 2018, "edition": "", "note": "" },
-  { "title": "Unlocked", "artist": "Denzel Curry & Kenny Beats", "year": 2020, "edition": "", "note": "" },
-  { "title": "Melt My Eyez See Your Future", "artist": "Denzel Curry", "year": 2022, "edition": "", "note": "" }
+  { "title": "In the Court of the Crimson King", "artist": "King Crimson", "year": 1969, "edition": "", "front": "/images/records/kingCrimson-Front.jpg", "back": "/images/records/kingCrimson-back.jpg", "source": "", "note": "" },
+  { "title": "Hunky Dory", "artist": "David Bowie", "year": 1971, "edition": "", "front": "/images/records/HunkyDory-Front.jpg", "back": "/images/records/HunkyDory-Back.jpg", "source": "", "note": "" },
+  { "title": "The Dark Side of the Moon", "artist": "Pink Floyd", "year": 1973, "edition": "50th Anniversary", "front": "/images/records/DarkSide-Front.jpg", "back": "/images/records/DarkSide-Back.jpg", "source": "", "note": "" },
+  { "title": "Unknown Pleasures", "artist": "Joy Division", "year": 1979, "edition": "", "front": "/images/records/UnknownPleasures-Font.jpg", "back": "/images/records/UnknownPleasures-Back.jpg", "source": "", "note": "" },
+  { "title": "Setting Sons", "artist": "The Jam", "year": 1979, "edition": "", "front": "/images/records/SettingSons-Front.jpg", "back": "/images/records/SettingSons-Back.jpg", "source": "", "note": "" },
+  { "title": "Hatful of Hollow", "artist": "The Smiths", "year": 1984, "edition": "", "front": "/images/records/HatfulOfHollow-Front.jpg", "back": "/images/records/HatfulOfHollow-Back.jpg", "source": "", "note": "" },
+  { "title": "Meat Is Murder", "artist": "The Smiths", "year": 1985, "edition": "", "front": "/images/records/MeatIsMurder-Front.jpg", "back": "/images/records/MeatIsMurder-Back.jpg", "source": "", "note": "" },
+  { "title": "Foo Fighters", "artist": "Foo Fighters", "year": 1995, "edition": "", "front": "/images/records/FooFighters-Front.jpg", "back": "/images/records/FooFighters-Back.jpg", "source": "", "note": "" },
+  { "title": "Is This It", "artist": "The Strokes", "year": 2001, "edition": "US cover", "front": "/images/records/IsThisIt-Front.jpg", "back": "/images/records/IsThisIt-Back.jpg", "source": "", "note": "" },
+  { "title": "Sonic Highways", "artist": "Foo Fighters", "year": 2014, "edition": "", "front": "/images/records/SonicHighways-Front.jpg", "back": "/images/records/SonicHighways-Back.jpg", "source": "", "note": "" },
+  { "title": "Kids See Ghosts", "artist": "Kids See Ghosts", "year": 2018, "edition": "", "front": "/images/records/KidsSeeGhosts-Front.jpg", "back": "/images/records/KidsSeeGhosts-Back.jpg", "source": "", "note": "" },
+  { "title": "Unlocked", "artist": "Denzel Curry & Kenny Beats", "year": 2020, "edition": "", "front": "/images/records/Unlocked-Front.jpg", "back": "/images/records/Unlocked-Back.jpg", "source": "", "note": "" },
+  { "title": "Melt My Eyez See Your Future", "artist": "Denzel Curry", "year": 2022, "edition": "", "front": "/images/records/MeltMyEyez-Front.jpg", "back": "/images/records/MeltMyEyez-Back.jpg", "source": "", "note": "" }
 ]

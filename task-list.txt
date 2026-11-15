@@ -23,7 +23,7 @@ Software (monitor station):
 Hardware (workbench station):
   [ ] FSM Detector
   [ ] Global Reader boards
-  [ ] Spike Robot
+  [ ] Spike Robot (RoboCup Jr. - photos + model already added)
   [ ] Sunstang board
 
   [ ] Confirm the project list - anything missing or to remove?
@@ -32,8 +32,12 @@ Hardware (workbench station):
 2. PHOTOS  (public/images/projects/)
 ------------------------------------
 JPG or WebP, ~1600px on the long side.
+Every clickable object opens an info window with a photo gallery,
+so EVERY project AND hobby needs supplementary photos (2-4 each is ideal).
   [ ] Hardware: 1-3 clear photos of each board/robot (plain background ideal)
+      [x] RoboCup team photos (Robocup.jpeg, Robocup(1).jpeg)
   [ ] Software: screenshots of each app (become the monitor "windows")
+  [ ] Hobbies: photos for vinyl/turntable, guitar, tennis cards
   [ ] Optional: photo of yourself for the Door / About section
 
 
@@ -42,6 +46,13 @@ JPG or WebP, ~1600px on the long side.
 Basic props (desk, monitor, shelves, turntable, crate, rackets, guitar)
 will be modelled in code - nothing needed for those.
   [ ] Export your PCBs from KiCad as .glb / .step (FSM Detector, Global Reader, Sunstang)
+      [x] Global Reader: BaseBoard.glb + RadioBoard.glb
+          (radio board is a shield that stacks on the base board - render as one assembly)
+          [x] Permission from GlobalReader to show them (Nov 14, 2026)
+          [ ] Check the stacked orientation on the site matches the real boards
+      [x] FSM Detector: built in code instead (src/objects/bench/FsmDetector.jsx)
+      [ ] Sunstang
+  [x] RoboCup robot CAD (robocup_robot.glb, in mm - scale x0.001)
   [ ] CAD model of Spike Robot (if you have one)
   [ ] Optional: a specific guitar model, or free .glb from Sketchfab / Poly Pizza
 
@@ -51,7 +62,8 @@ will be modelled in code - nothing needed for those.
   [x] Record list (records.json - done; covers can be fetched automatically)
   [ ] Optional: add notes to favourite records ("note" field)
   [ ] Guitar: make / model / colour
-  [ ] Tennis: racket brand / colour + short blurb
+  [x] Tennis racket: Head Speed Pro 2022
+  [ ] Tennis: short blurb
   [ ] 1-2 sentence blurb for each hobby
 
 
@@ -67,5 +79,5 @@ will be modelled in code - nothing needed for those.
 
 6. LOOK & FEEL
 --------------
-  [ ] Vibe: cozy/warm, clean/minimal, retro, or other
-  [ ] Reference sites or images you like
+  [ ] Vibe: pick a mockup (A / B / C) - https://claude.ai/artifact/2R2mjo9UBytB9hhfBmt8t6
+  [x] Reference images (public/images/Inspiration/ - electronics desk + hobby corner)

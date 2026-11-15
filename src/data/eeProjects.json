@@ -1,0 +1,62 @@
+[
+  {
+    "id": "robocup-robot",
+    "name": "RoboCup Jr. Rescue Robot",
+    "pitch": "Where it started: the high-school robot that got me into electrical engineering.",
+    "role": "High-school team, St. Andrew's College",
+    "summary": "I helped design our RoboCup Jr. rescue robot and did some of the programming. The main robot ran on an Arduino Mega, but we never calculated its total current draw, so the day before regionals it would not run with everything connected. We switched to our LEGO SPIKE backup robot and qualified for Team Canada at RoboCup Jr. Worlds with it. The lesson stuck: power budgeting matters.",
+    "tech": ["Arduino Mega", "OpenMV H7 camera", "MPU6050 IMU", "TCS34725 colour sensor", "HC-SR04 ultrasonic", "IR line array", "LEGO SPIKE"],
+    "results": ["Qualified for Team Canada at RoboCup Jr. Worlds (July 2023)"],
+    "links": [],
+    "dates": "Oct 2022 – Jul 2023",
+    "images": ["/images/projects/Robocup.jpeg", "/images/projects/Robocup(1).jpeg"],
+    "station": "bench",
+    "object": "SpikeRobot",
+    "private": false
+  },
+  {
+    "id": "fsm-detector",
+    "name": "Moore FSM Sequence Detector",
+    "pitch": "An 8-state machine that raises its output after 0011 and drops it after 0101.",
+    "role": "Class project (ECE 2277A), individual",
+    "summary": "An 8-state Moore machine built from three D flip-flops. Output Z goes HIGH after the input stream contains 0011 and back LOW after 0101 or a reset. I reworked the state assignment and shared product terms to cut the circuit cost, then built it structurally in Quartus. The board on the bench runs the same equations: flip X and press CLK.",
+    "tech": ["Quartus", "D flip-flops", "K-maps", "State assignment"],
+    "results": ["Circuit cost cut from 60 to 51 (15% lower)"],
+    "links": [],
+    "dates": "Fall 2025",
+    "images": ["/images/fpga-thumb.png"],
+    "station": "bench",
+    "object": "FsmDetector",
+    "private": false
+  },
+  {
+    "id": "sunstang-board",
+    "name": "Sunstang Driver Controls Board",
+    "pitch": "The custom STM32 board between the driver, the powertrain and the solar car's CAN network.",
+    "role": "Western Sunstang solar car team, Driver Controls subteam",
+    "summary": "I led the move from Nucleo prototyping (STM32 Nucleo-F302R8) to a custom STM32 PCB. The board is the interface between the driver's inputs, the powertrain and the safety-critical CAN network.",
+    "tech": ["STM32", "CAN (selectable 120 Ω termination)", "12 V → 3.3 V switching supply", "4-layer stackup", "USB-UART", "SWD", "KiCad"],
+    "results": [],
+    "links": [],
+    "dates": "2025",
+    "images": ["/images/sunstang-thumb.png"],
+    "station": "bench",
+    "object": "SunstangBoard",
+    "private": false
+  },
+  {
+    "id": "globalreader",
+    "name": "GlobalReader Radio Board + Baseboard",
+    "pitch": "Two production IoT boards, redesigned from scratch in KiCad. The radio board plugs onto the baseboard.",
+    "role": "Embedded Systems Engineering Intern, GlobalReader (Tartu, Estonia)",
+    "summary": "As the sole in-house hardware engineer, I led the from-scratch KiCad redesign of two production IoT PCBs that had been outsourced. I redesigned the cellular + WiFi subsystem, replaced the two-stage power design to fix a 3.3 V thermal defect under WiFi transmit bursts, and swapped a lossy Schottky pair for ideal-diode reverse-polarity protection. I debugged the first boards with oscilloscope UART capture and built the JLCPCB production pipeline.",
+    "tech": ["KiCad", "ESP32-WROOM-32UE", "LTE-M", "Nuvoton M487", "IP101GR Ethernet PHY", "LM76005 buck", "LM74700 ideal diode", "KiKit", "kicad-cli"],
+    "results": ["Fixed a 3.3 V thermal defect under WiFi transmit bursts", "Built the JLCPCB pipeline: panelization, BOM and placement scripts"],
+    "links": [],
+    "dates": "May – Aug 2026",
+    "images": ["/images/globalreader-thumb.png"],
+    "station": "bench",
+    "object": "GlobalReaderBoards",
+    "private": false
+  }
+]
