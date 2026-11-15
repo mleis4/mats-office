@@ -1,0 +1,67 @@
+# ============================================================================
+# Program Name:   deploy.yml
+# Author:         Mats Leis
+# Student Number: 251409940
+# Date:           November 15, 2026
+# Description:    Builds the mats-office Vite site and publishes it to
+#                 GitHub Pages every time code is pushed to the main branch.
+#                 Place at .github/workflows/deploy.yml
+# ============================================================================
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you re-run a deploy by hand from the Actions tab
+
+# Permissions GitHub Pages needs to publish the site
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; a newer push cancels nothing mid-deploy
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # ---- Build the site into the dist/ folder ----
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with Vite
+        run: npm run build
+
+      - name: Upload the built site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # ---- Publish the uploaded build to GitHub Pages ----
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v5
