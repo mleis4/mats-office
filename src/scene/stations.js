@@ -85,7 +85,7 @@ export const LEFT_WALL_RUN = {
 // Stations: fixed camera poses the visitor moves between
 // ---------------------------------------------------------------------------
 export const STATIONS = {
-  door: { label: 'Door', position: [0, 1.45, ROOM.halfDepth + 2.7], target: [0, 1.3, ROOM.halfDepth] },
+  door: { label: 'Door', position: [0, 1.4, ROOM.halfDepth + 3.05], target: [0, 1.2, ROOM.halfDepth] },
   bench: { label: 'Workbench', position: [0, 1.8, BACK_WALL_Z + 3.5], target: [0, 1.2, BACK_WALL_Z + 0.4] },
   hobbies: { label: 'Hobbies', position: [LEFT_WALL_X + 2.95, 1.55, 0.05], target: [LEFT_WALL_X, 1.3, 0.05] },
   desk: { label: 'Desk', position: [RIGHT_WALL_X - 2.25, 1.35, DESK.z], target: [RIGHT_WALL_X, 1.08, DESK.z] },

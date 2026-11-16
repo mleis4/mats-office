@@ -19,6 +19,7 @@ import records from './data/records.json';
 import useNowPlaying from './hooks/useNowPlaying';
 import Projects2D from './pages/Projects2D';
 import CameraRig from './scene/CameraRig';
+import Hallway from './scene/Hallway';
 import Lighting from './scene/Lighting';
 import Office from './scene/Office';
 import { SceneContext } from './scene/SceneContext';
@@ -28,6 +29,7 @@ import HobbyCorner from './stations/HobbyCorner';
 import Monitor from './stations/Monitor';
 import Workbench from './stations/Workbench';
 import ProjectCard from './ui/ProjectCard';
+import ResumeViewer from './ui/ResumeViewer';
 import Skip2DButton from './ui/Skip2DButton';
 import StationNav from './ui/StationNav';
 
@@ -67,6 +69,7 @@ export default function App() {
   const [hovered, setHovered] = useState(null); // { id, label } | null
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(null); // album lifted out of the crate
   const [browseRecordIndex, setBrowseRecordIndex] = useState(null);     // album raised while browsing
+  const [isResumeOpen, setIsResumeOpen] = useState(false);               // resume taken out of the door holder
   const lastRecordStepRef = useRef(0);
 
   const nowPlaying = useNowPlaying();
@@ -89,6 +92,12 @@ export default function App() {
     setSelectedRecordIndex(null);
     setBrowseRecordIndex(objectId === 'records' ? 0 : null); // start with the front record raised
   }, []);
+
+  const openResume = useCallback(() => {
+    setIsResumeOpen(true);
+    setHovered(null);
+  }, []);
+  const closeResume = useCallback(() => setIsResumeOpen(false), []);
 
   const closeFocus = useCallback(() => {
     setFocusId(null);
@@ -128,7 +137,8 @@ export default function App() {
 
   // ---------------- Keyboard and scroll ----------------
   useEffect(() => {
-    if (show2D) return undefined;
+    // The resume viewer handles its own keys and scrolls on its own
+    if (show2D || isResumeOpen) return undefined;
 
     const handleKeyDown = (event) => {
       if (isTypingTarget(event.target)) return;
@@ -171,7 +181,7 @@ export default function App() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [show2D, hasEntered, closeFocus, enterOffice, stepStation, stepRecord, isBrowsingRecords, browseRecordIndex]);
+  }, [show2D, isResumeOpen, hasEntered, closeFocus, enterOffice, stepStation, stepRecord, isBrowsingRecords, browseRecordIndex]);
 
   // ---------------- Swipe between stations on touch screens ----------------
   const handleTouchStart = (event) => {
@@ -227,7 +237,8 @@ export default function App() {
 
           {/* The door shows first; the room loads behind it */}
           <Suspense fallback={null}>
-            <Door isOpen={hasEntered} onEnter={enterOffice} />
+            <Door isOpen={hasEntered} onEnter={enterOffice} onOpenResume={openResume} />
+            <Hallway />
           </Suspense>
           <Suspense fallback={null}>
             <Office />
@@ -253,11 +264,11 @@ export default function App() {
         {!hasEntered && (
           <div className="door-hint">
             <button type="button" className="primary-button" onClick={enterOffice}>Open the door</button>
-            <span>{isLoading ? `Setting up the workshop… ${Math.round(loadProgress)}%` : 'or click the handle, press Enter, or scroll'}</span>
+            <span>{isLoading ? `Setting up the workshop… ${Math.round(loadProgress)}%` : 'or click the handle, press Enter, or scroll · my resume is in the holder'}</span>
           </div>
         )}
 
-        {hasEntered && hovered && !focusId && (
+        {hovered && !focusId && !isResumeOpen && (
           <div className="hover-label" role="status">{hovered.label} · click to open</div>
         )}
 
@@ -267,6 +278,7 @@ export default function App() {
               <a href={`mailto:${CONTACT.email}`}>Email</a>
               <a href={CONTACT.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
               <a href={CONTACT.github} target="_blank" rel="noreferrer">GitHub</a>
+              <a href={CONTACT.resumeUrl} onClick={(event) => { event.preventDefault(); openResume(); }}>Resume</a>
             </nav>
             <StationNav station={station} onGoTo={goToStation} onStep={stepStation} />
             <span className="overlay-spacer" />
@@ -284,6 +296,8 @@ export default function App() {
             onBrowseRecord={setBrowseRecordIndex}
           />
         )}
+
+        {isResumeOpen && <ResumeViewer onClose={closeResume} />}
       </div>
     </div>
   );

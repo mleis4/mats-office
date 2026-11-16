@@ -17,10 +17,74 @@ import { useEffect, useRef, useState } from 'react';
 import records from '../data/records.json';
 
 const STATUS_LABELS = {
-  live: 'Now playing',
-  recent: 'Last played',
+  live: 'Currently listening',
+  recent: 'Last listened to',
   fallback: 'On the platter (from the crate)',
 };
+
+// ---------------------------------------------------------------------------
+// NowPlayingPlayer: the turntable's music player, laid out like a phone's
+// lock-screen player: a big cover in the centre over a blurred copy of itself,
+// the song underneath, then a progress bar and playback buttons. The bar and
+// buttons are for looks only; Last.fm doesn't say how far into the song I am.
+// Below the player: my top artist and top song of the last 30 days.
+// ---------------------------------------------------------------------------
+function NowPlayingPlayer({ nowPlaying }) {
+  const isLive = nowPlaying.status === 'live';
+  const artUrl = nowPlaying.artUrl ? encodeURI(nowPlaying.artUrl) : null;
+  const { topArtist, topTrack } = nowPlaying;
+
+  return (
+    <>
+      <div className={isLive ? 'now-playing is-live' : 'now-playing'}>
+        {artUrl && <img className="now-playing-backdrop" src={artUrl} alt="" aria-hidden="true" />}
+
+        <span className="now-playing-status">
+          <i className="now-playing-dot" aria-hidden="true" />
+          {STATUS_LABELS[nowPlaying.status]}
+        </span>
+
+        {artUrl
+          ? <img className="now-playing-art" src={artUrl} alt={`Cover art for ${nowPlaying.title}`} />
+          : <div className="now-playing-art is-blank" aria-hidden="true">♪</div>}
+
+        <div className="now-playing-song">
+          <span className="now-playing-title">{nowPlaying.title}</span>
+          <span className="now-playing-artist">{nowPlaying.artist}</span>
+        </div>
+
+        <div className="now-playing-progress" aria-hidden="true"><i /></div>
+
+        <div className="now-playing-controls" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M11 6v12L3 12zM21 6v12l-8-6z" /></svg>
+          {isLive
+            ? <svg viewBox="0 0 24 24" className="is-main"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+            : <svg viewBox="0 0 24 24" className="is-main"><path d="M7 4l13 8-13 8z" /></svg>}
+          <svg viewBox="0 0 24 24"><path d="M13 6v12l8-6zM3 6v12l8-6z" /></svg>
+        </div>
+      </div>
+
+      {(topArtist || topTrack) && (
+        <dl className="top-listens">
+          {topArtist && (
+            <div>
+              <dt>Top artist · 30 days</dt>
+              <dd>{topArtist.name}</dd>
+              <dd className="top-listens-plays">{topArtist.playCount.toLocaleString()} plays</dd>
+            </div>
+          )}
+          {topTrack && (
+            <div>
+              <dt>Top song · 30 days</dt>
+              <dd>{topTrack.title}</dd>
+              <dd className="top-listens-plays">{topTrack.artist} · {topTrack.playCount.toLocaleString()} plays</dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // ItemDetails: everything below the title. Used by the card and the 2D page.
@@ -53,16 +117,7 @@ export function ItemDetails({
       <p className="card-summary">{item.summary}</p>
 
       {/* Turntable: what's playing */}
-      {item.id === 'turntable' && nowPlaying && (
-        <div className="now-playing">
-          {nowPlaying.artUrl && <img src={nowPlaying.artUrl} alt="" />}
-          <div>
-            <span className="now-playing-status">{STATUS_LABELS[nowPlaying.status]}</span>
-            <span className="now-playing-title">{nowPlaying.title}</span>
-            <span className="now-playing-artist">{nowPlaying.artist}</span>
-          </div>
-        </div>
-      )}
+      {item.id === 'turntable' && nowPlaying && <NowPlayingPlayer nowPlaying={nowPlaying} />}
 
       {/* Record crate, one album picked: its story (the album floats beside the card) */}
       {item.id === 'records' && pickedRecord && (

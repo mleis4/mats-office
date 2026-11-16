@@ -488,29 +488,102 @@ button.record-row:hover { background: rgba(235, 167, 6, 0.12); }
 .record-detail-meta { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); }
 .record-detail-text { margin: 0; font-size: 15px; line-height: 1.6; white-space: pre-line; }
 
-/* Turntable: now playing */
+/* Turntable: now playing, laid out like a phone's lock-screen music player */
 .now-playing {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 18px 20px 20px;
+  border-radius: 26px;
+  background: linear-gradient(160deg, #2b2f3a, #121318);
+  color: #ffffff;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* The cover again, blurred and darkened, as the player's background */
+.now-playing-backdrop {
+  position: absolute;
+  inset: -40px;
+  width: calc(100% + 80px);
+  height: calc(100% + 80px);
+  object-fit: cover;
+  filter: blur(34px) brightness(0.55) saturate(1.3);
+  z-index: -1;
+}
+
+.now-playing-status {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding: 12px;
-  border-radius: 12px;
-  background: var(--warm-black);
-  color: var(--paper);
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.now-playing img {
-  width: 56px;
-  height: 56px;
-  border-radius: 6px;
+.now-playing-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); }
+.now-playing.is-live .now-playing-dot { background: #34d058; animation: now-playing-pulse 1.6s ease-in-out infinite; }
+
+.now-playing-art {
+  width: min(100%, 250px);
+  aspect-ratio: 1;
+  border-radius: 14px;
   object-fit: cover;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
 }
 
-.now-playing div { display: flex; flex-direction: column; }
-.now-playing-status { font-family: var(--font-mono); font-size: 11px; color: var(--sun-yellow); }
-.now-playing-title { font-weight: 600; }
-.now-playing-artist { font-size: 14px; color: var(--paper-soft); }
+.now-playing-art.is-blank {
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 72px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.now-playing-song { align-self: stretch; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.now-playing-title { font-size: 19px; font-weight: 600; line-height: 1.25; }
+.now-playing-artist { font-size: 15px; color: rgba(255, 255, 255, 0.7); }
+
+.now-playing-progress {
+  align-self: stretch;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.now-playing-progress i { display: block; width: 35%; height: 100%; border-radius: 3px; background: rgba(255, 255, 255, 0.9); }
+.now-playing.is-live .now-playing-progress i { animation: now-playing-sweep 2.4s ease-in-out infinite; }
+
+.now-playing-controls { display: flex; align-items: center; gap: 34px; }
+.now-playing-controls svg { width: 30px; height: 30px; fill: #ffffff; }
+.now-playing-controls svg.is-main { width: 40px; height: 40px; }
+
+@keyframes now-playing-pulse {
+  50% { opacity: 0.35; }
+}
+
+@keyframes now-playing-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(290%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now-playing.is-live .now-playing-dot,
+  .now-playing.is-live .now-playing-progress i { animation: none; }
+}
+
+/* Top artist and top song, under the player */
+.top-listens { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0 0; }
+.top-listens div { padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.top-listens dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.top-listens dd { margin: 4px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.top-listens dd.top-listens-plays { margin-top: 2px; font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--ink-soft); }
 
 /* Enlarged photo */
 .lightbox {
@@ -539,149 +612,306 @@ button.record-row:hover { background: rgba(235, 167, 6, 0.12); }
   color: var(--paper);
 }
 
+/* ---------------- Resume viewer: the page, a paperclipped card, Take one ---------------- */
+.resume-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 9, 8, 0.86);
+  pointer-events: auto;
+  cursor: zoom-out;
+}
+
+.resume-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 44px 24px 24px; }
+
+.resume-page {
+  position: relative;
+  width: min(100%, 820px);
+  margin: 0 auto;
+  cursor: auto;
+}
+
+.resume-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  background: #ffffff;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Business card, hanging off the page's top right corner */
+.business-card {
+  position: absolute;
+  top: -34px;
+  right: -96px;
+  width: 268px;
+  padding: 16px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  background: #fbf7ee;
+  color: var(--warm-black);
+  font-style: normal;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  transform: rotate(3.5deg);
+}
+
+.business-card-clip {
+  position: absolute;
+  top: -20px;
+  left: 26px;
+  width: 20px;
+  height: 50px;
+  fill: none;
+  stroke: #9a9da3;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.business-card-name { font-size: 20px; font-weight: 600; line-height: 1.2; }
+.business-card-tagline { margin-top: 2px; font-size: 11px; color: var(--ink-soft); }
+.business-card-rows { margin: 12px 0 0; padding-top: 10px; border-top: 2px solid var(--gold); display: grid; gap: 5px; }
+.business-card-rows div { display: flex; gap: 8px; align-items: baseline; }
+.business-card-rows dt { width: 58px; flex-shrink: 0; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+.business-card-rows dd { margin: 0; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+.business-card-rows a { color: var(--pcb-navy); }
+
+.resume-actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  background: rgba(26, 24, 20, 0.95);
+  border-top: 1px solid rgba(244, 237, 224, 0.15);
+  color: var(--paper);
+  font-size: 16px;
+  cursor: auto;
+}
+
+.resume-actions .primary-button { display: inline-flex; align-items: center; text-decoration: none; }
+.resume-close { color: var(--paper); }
+
+/* Narrow screens: the card sits above the page, still clipped on */
+@media (max-width: 1080px) {
+  .business-card { position: relative; top: auto; right: auto; width: min(100%, 300px); margin: 0 auto -18px; z-index: 1; transform: rotate(-1.5deg); }
+}
 /* ---------------- Fake desktop on the monitor ---------------- */
 .desktop {
   position: relative;
   overflow: hidden;
-  background: var(--navy);
+  background:
+    radial-gradient(circle at 78% 30%, rgba(108, 184, 255, 0.38), transparent 46%),
+    radial-gradient(circle at 30% 85%, rgba(47, 125, 225, 0.35), transparent 50%),
+    linear-gradient(140deg, #0d1a33 0%, #17345e 55%, #0f2548 100%);
   font-family: var(--font-ui);
   color: var(--warm-black);
   user-select: none;
 }
 
+/* Desktop icons, in a column down the left side */
+.desktop-icons {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desktop-icon {
+  width: 128px;
+  padding: 10px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: #ffffff;
+  font: 600 15px/1.2 var(--font-ui);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+
+.desktop-icon:hover,
+.desktop-icon.is-open {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.app-glyph { display: block; width: 76px; height: 76px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+.app-glyph.is-small { width: 28px; height: 28px; filter: none; flex-shrink: 0; }
+.app-glyph svg { display: block; width: 100%; height: 100%; }
+
+/* The open app's window */
 .app-window {
   position: absolute;
   display: flex;
   flex-direction: column;
-  padding: 0;
-  border: 2px solid #0a0f1c;
+  border: 1px solid #0a0f1c;
   border-radius: 8px;
   background: var(--paper);
   overflow: hidden;
   text-align: left;
-  cursor: pointer;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
 }
 
-.app-window:hover,
 .app-window.is-focused { border-color: var(--gold); }
 
-.app-window.is-mail { left: 20px; top: 18px; width: 440px; height: 486px; }
-.app-window.is-notebook { left: 478px; top: 18px; width: 462px; height: 262px; }
-.app-window.is-tracker { left: 478px; top: 296px; width: 462px; height: 208px; }
+.app-window.is-mail { left: 168px; top: 18px; width: 720px; height: 460px; }
+.app-window.is-notebook { left: 220px; top: 70px; width: 600px; height: 290px; }
+.app-window.is-tracker { left: 190px; top: 34px; width: 680px; height: 430px; }
 
 .app-titlebar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 30px;
+  gap: 8px;
+  height: 32px;
   flex-shrink: 0;
-  padding: 0 10px;
+  padding: 0 0 0 8px;
   background: var(--cream);
   font-family: var(--font-mono);
   font-size: 12px;
 }
 
-.app-dots { display: flex; gap: 5px; }
-.app-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(26, 24, 20, 0.35); }
+.app-title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.app-controls { display: flex; align-self: stretch; }
+
+.app-control {
+  position: relative;
+  width: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--warm-black);
+  font: 12px var(--font-ui);
+}
+
+.app-control.is-minimise::before { content: ''; width: 10px; border-top: 1px solid currentColor; }
+.app-control.is-maximise::before { content: ''; width: 9px; height: 9px; border: 1px solid currentColor; }
+.app-control.is-close { cursor: pointer; }
+.app-control.is-close:hover { background: #d93025; color: #ffffff; }
 
 .app-content {
   position: relative;
   display: block;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   overflow: hidden;
+  cursor: pointer;
 }
 
+/* Taskbar */
 .desktop-taskbar {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 36px;
+  height: 48px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
-  background: #0a0f1c;
+  gap: 6px;
+  padding: 0 12px 0 8px;
+  background: rgba(10, 15, 28, 0.92);
   color: var(--paper-soft);
   font-family: var(--font-mono);
-  font-size: 12px;
-}
-
-/* Cold Emailer window */
-.mail {
-  display: grid;
-  grid-template-columns: 124px minmax(0, 1fr);
-  height: 100%;
   font-size: 13px;
 }
 
-.mail-sidebar {
-  padding: 12px 10px;
-  background: #e9dfcc;
-  border-right: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.taskbar-start { width: 40px; height: 40px; display: grid; place-items: center; }
+.taskbar-start svg { width: 22px; height: 22px; }
+.taskbar-apps { display: flex; gap: 2px; }
+
+.taskbar-app {
+  position: relative;
+  width: 46px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
 }
 
-.mail-sidebar-title,
-.mail-sent {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
+.taskbar-app:hover,
+.taskbar-app.is-open { background: rgba(255, 255, 255, 0.12); }
+
+.taskbar-app::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  width: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+  transform: translateX(-50%);
 }
 
-.mail-sidebar-title { margin-bottom: 4px; }
-.mail-sent { margin-top: auto; text-transform: none; letter-spacing: 0; }
-.mail-list { padding: 5px 8px; border-radius: 6px; }
-.mail-list.is-active { background: var(--pcb-navy); color: var(--paper); }
+.taskbar-app.is-open::after { width: 16px; background: #6cb8ff; }
 
-.mail-draft {
-  display: flex;
-  flex-direction: column;
-  padding: 12px 14px;
+.taskbar-hint { flex: 1; text-align: center; opacity: 0.7; }
+.taskbar-clock { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25; }
+
+/* Cold Emailer window: a terminal running the job applicator */
+.app-content.is-interactive { cursor: auto; }
+
+.terminal {
+  height: 100%;
+  background: #0c0c0c;
+  color: #d4d4d4;
+  font-family: Consolas, 'Cascadia Mono', ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.38;
+  cursor: text;
+}
+
+.terminal-log {
+  height: 100%;
+  padding: 10px 14px 14px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #555555 transparent;
+}
+
+.terminal-line { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.terminal-line.is-typed { color: #ffffff; }
+.terminal-line.is-dim { color: #9a9a9a; }
+.terminal-line.is-ok { color: #6ccf8e; }
+.terminal-line.is-error { color: #ff8f85; }
+.terminal-line.is-link { color: #6cb8ff; text-decoration: underline; cursor: pointer; }
+
+.terminal-prompt { display: flex; white-space: pre; color: #ffffff; }
+
+.terminal-prompt input {
+  flex: 1;
   min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  caret-color: #ffffff;
 }
-
-.mail-field {
-  display: flex;
-  gap: 8px;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.mail-field span { width: 52px; flex-shrink: 0; color: var(--ink-soft); }
-.mail-body { flex: 1; margin: 12px 0 0; font-size: 14px; line-height: 1.55; }
-
-.mail-caret {
-  display: inline-block;
-  width: 2px;
-  height: 15px;
-  margin-left: 1px;
-  background: var(--warm-black);
-  vertical-align: text-bottom;
-}
-
-.mail-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-}
-
-.mail-attachment { padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; }
-.mail-status { padding: 5px 12px; border-radius: 6px; background: rgba(26, 24, 20, 0.1); }
-.mail-status.is-sent { background: #1f6b3a; color: #ffffff; }
-
 /* Concrete notebook window */
 .notebook { height: 100%; padding: 10px 14px; font-size: 12px; }
 

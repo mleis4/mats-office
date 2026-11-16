@@ -269,7 +269,7 @@ Source: Mats's resume, his reports and repos. These facts are confirmed unless m
 - For each lead it shows company metrics (headcount, turnover change, unicorn status), fills a template with the company's industry and growth, and sends a personalized email with the resume attached via Gmail SMTP.
 - A CSV tracker follows Applied → Interview → Rejected → Accepted, with conversion stats.
 - Tech: Python, requests, pandas, smtplib.
-- Monitor window: a mail-client look with drafts typing themselves out and sending. ⚠️ Use **fake recipients**. The real template names a relative and has a phone number: never show it.
+- Monitor window: a working copy of the CLI menu from `main.py`, in a terminal. "Apply to next company" makes the visitor the lead: they type their own email and get a thank-you note with the resume attached, sent by `apps-script/visitor-email.gs` (a Google Apps Script web app on Mats's Gmail; its URL goes in `VITE_VISITOR_EMAIL_URL`). ⚠️ The tracker's other rows are **fake**. The real template names a relative and has a phone number: never show it. The visitor email uses its own wording, in the script.
 - **TODO:** results (emails sent, replies, did it lead to GlobalReader?).
 
 **6. Concrete Strength Predictor** · DS3000 group project (Group 07) · Fall 2026
@@ -378,8 +378,8 @@ Run the main session on Sonnet. Call the architect explicitly for hard tasks.
 ## 15. Privacy rules (hard)
 
 - GlobalReader hardware: approved by GlobalReader on Nov 14, 2026 (3D models + pinout render). Anything beyond those (schematics, other boards) still needs a fresh OK.
-- Phone number: never on the site. Email and LinkedIn are fine.
-- Cold Emailer: fake recipients only. Never display the real email template or `application_status.csv`.
+- Phone number: only on the business card in the resume viewer and in the resume PDF itself (Mats's decision, Nov 15, 2026). Nowhere else on the site. Email and LinkedIn are fine.
+- Cold Emailer: the leads shown are fake. Never display the real email template or `application_status.csv`. The only real email it sends is the thank-you note to the address a visitor types in themselves (Mats's decision, Nov 16, 2026): one fixed message, limited per address and per day by the script, and the address is not kept in a list.
 - DS3000 code/repo: only with group/course OK.
 
 ---

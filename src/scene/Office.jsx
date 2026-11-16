@@ -74,10 +74,10 @@ function Walls() {
 
   return (
     <group>
-      {/* Back, left and right walls */}
+      {/* Back, left and right walls. The side walls stop short of the door wall's outside face, so they don't show in the hallway. */}
       <Slab size={[roomWidth + 0.3, height, WALL_THICKNESS]} position={[0, height / 2, -halfDepth - WALL_THICKNESS / 2]} colour={WALL_COLOUR} roughness={0.95} castShadow={false} />
-      <Slab size={[WALL_THICKNESS, height, roomDepth + 0.3]} position={[-halfWidth - WALL_THICKNESS / 2, height / 2, 0]} colour={WALL_COLOUR} roughness={0.95} castShadow={false} />
-      <Slab size={[WALL_THICKNESS, height, roomDepth + 0.3]} position={[halfWidth + WALL_THICKNESS / 2, height / 2, 0]} colour={WALL_COLOUR} roughness={0.95} castShadow={false} />
+      <Slab size={[WALL_THICKNESS, height, roomDepth + 0.2]} position={[-halfWidth - WALL_THICKNESS / 2, height / 2, 0]} colour={WALL_COLOUR} roughness={0.95} castShadow={false} />
+      <Slab size={[WALL_THICKNESS, height, roomDepth + 0.2]} position={[halfWidth + WALL_THICKNESS / 2, height / 2, 0]} colour={WALL_COLOUR} roughness={0.95} castShadow={false} />
 
       {/* Door wall: left panel, right panel, and the lintel above the door */}
       <Slab size={[sidePanelWidth + 3, height, WALL_THICKNESS]} position={[-sidePanelX - 1.5, height / 2, doorWallZ]} colour={DOOR_WALL_OUTSIDE} roughness={0.95} castShadow={false} />

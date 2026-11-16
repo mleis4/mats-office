@@ -20,6 +20,11 @@ export const CONTACT = {
   email: 'leismats@gmail.com',
   linkedin: 'https://www.linkedin.com/in/mats-leis-4b9911271/',
   github: 'https://github.com/mleis4',
+  // The phone number is shown only on the business card in the resume viewer
+  phone: '+1 289 552 2410',
+  resumeUrl: '/textures/Resume.pdf',
+  resumeFileName: 'Mats-Leis-Resume.pdf',
+  resumePreviewUrl: '/resume/resume-preview.jpg', // a picture of the PDF's page; remake it when the PDF changes
 };
 
 export const SECTIONS = [

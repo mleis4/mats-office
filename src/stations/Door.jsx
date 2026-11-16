@@ -5,9 +5,10 @@
  * Student Number: 251409940
  * Date:           November 14, 2026
  * Description:    The landing view: a closed office door with a brass
- *                 nameplate, my photo pinned on like an ID badge and a sticky
- *                 note. Clicking the door (or its handle) swings it open and
- *                 lets the camera glide into the workshop.
+ *                 nameplate, my photo pinned on like an ID badge, a sticky
+ *                 note and a holder with my resume in it. Clicking the door
+ *                 (or its handle) swings it open and lets the camera glide
+ *                 into the workshop; clicking the holder opens the resume.
  * ============================================================================
  */
 
@@ -15,6 +16,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
+import ResumeHolder from '../objects/door/ResumeHolder';
 import TextPlane from '../objects/TextPlane';
 import { ROOM } from '../scene/stations';
 
@@ -30,7 +32,7 @@ const BRASS = '#c9a24a';
 const FRAME_COLOUR = '#d7c2a0';
 const STICKY_YELLOW = '#fede4e';
 
-export default function Door({ isOpen, onEnter }) {
+export default function Door({ isOpen, onEnter, onOpenResume }) {
   const hingeRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -154,6 +156,9 @@ export default function Door({ isOpen, onEnter }) {
               fontSizeRatio={0.34}
             />
           </group>
+
+          {/* Resume holder, below the photo and the note. It has its own click. */}
+          <ResumeHolder position={[-0.02, -0.47, DOOR_THICKNESS / 2]} scale={1.25} onOpen={onOpenResume} />
 
           {/* Door handle */}
           <group position={[0.38, -0.05, faceZ]}>
