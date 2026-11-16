@@ -40,17 +40,20 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Install dependencies
         run: npm ci
 
-      # The site reads these while building. Add them under the repo's
-      # Settings > Secrets and variables > Actions. Any that are missing just
-      # switch that feature to its fallback.
       - name: Build with Vite
         run: npm run build
         env:
-          VITE_LASTFM_USERNAME: ${{ secrets.VITE_LASTFM_USERNAME }}
+          # Repository secrets: Settings > Secrets and variables > Actions >
+          # Secrets tab > "Repository secrets" (NOT environment secrets,
+          # which this build job cannot see)
           VITE_LASTFM_API_KEY: ${{ secrets.VITE_LASTFM_API_KEY }}
+          VITE_LASTFM_USERNAME: ${{ secrets.VITE_LASTFM_USERNAME }}
           VITE_VISITOR_EMAIL_URL: ${{ secrets.VITE_VISITOR_EMAIL_URL }}
 
       - name: Upload the built site
@@ -68,4 +71,4 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
