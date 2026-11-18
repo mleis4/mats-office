@@ -20,4 +20,6 @@ Every downloaded model, with its source and licence (CC0 / CC-BY only). Mats's o
 | speaker.glb | TODO (Mats) | TODO | TODO | as downloaded (3.1 MB, over the 2 MB budget) |
 | turntable.glb | TODO (Mats) | TODO | TODO | as downloaded |
 | Skis.glb | TODO (Mats) | TODO | TODO | as downloaded; each ski is stood upright in code |
+| keyboard1.glb | https://sketchfab.com/3d-models/keyboard-ba869e8681974cf088736173b8b86fef ("keyboard") | 45P3R4 | CC-BY-4.0 | Draco (glTF-Transform); static keycaps merged, split back into keys in `TypingKeyboard.jsx` |
+| mouse.glb | https://sketchfab.com/3d-models/computer-mouse-6e7940d9e2144efeae3468a906f27e07 ("Computer mouse") | zhe_kan | CC-BY-4.0 | Draco (glTF-Transform) |
 | SkiTheEast_Decor.glb | TODO (Mats; Onshape export) | TODO | TODO | as exported (2.4 MB, over the 2 MB budget) |

@@ -1,0 +1,76 @@
+{
+  "title": "Concrete compressive strength: progress report",
+  "byline": "DS3000 Group 07 · Fall 2026 · my part: the Stage 2 XGBoost model",
+  "status": "Stages 1 and 2 are done on the validation split. The 206 test rows are still untouched.",
+  "sections": [
+    {
+      "heading": "The problem",
+      "paragraphs": [
+        "Predict a concrete mix's compressive strength (MPa) from seven ingredient amounts (kg/m³) and its age in days. The data is OpenML 44959 (Yeh's concrete dataset): 1,030 mixes, split once 618 / 206 / 206 for train, validation and test, with identical rows kept on the same side of the split."
+      ]
+    },
+    {
+      "heading": "What the training data shows",
+      "paragraphs": [
+        "Strength averages 35.8 MPa and runs from 4.6 to 82.6 MPa, with a slight right skew (0.39). Cement has the strongest link to strength (r = 0.51), then superplasticizer (0.35) and age (0.35). Water pulls the other way (−0.27).",
+        "Age matters a lot, and not in a straight line: the median strength is 16 MPa at 3 days, 33.6 MPa at 28 days and 52 MPa at 56 days."
+      ],
+      "figure": {
+        "src": "/images/Concrete/Fig03_strength_vs_age_cement_water_train.png",
+        "alt": "Three scatter plots of training strength against age (log scale), cement and water",
+        "caption": "Fig. 3: strength against age, cement and water (training rows)"
+      }
+    },
+    {
+      "heading": "What has been done",
+      "paragraphs": [
+        "Stage 1 set the baselines: always guessing the mean (16.57 MPa RMSE), a cement-only linear fit (14.37), linear regression on all eight inputs (11.03) and 5-nearest-neighbours (11.04). Linear regression overestimated young concrete (≤ 7 days, mean error −10.2 MPa) and underestimated 8–90 day concrete, a sign that the age effect is not linear.",
+        "Stage 2 tried three non-linear model families with a fixed search, each setting run once: 4 neural networks (MLP), 8 random forests and 8 XGBoost models, 20 in all. Every model was picked by validation RMSE."
+      ]
+    },
+    {
+      "heading": "Results (validation set)",
+      "table": {
+        "columns": ["Model", "RMSE (MPa)", "MAE (MPa)", "R²"],
+        "rows": [
+          ["XGBoost", "4.83", "3.31", "0.915"],
+          ["MLP (64, 32)", "5.70", "4.04", "0.882"],
+          ["Random forest", "5.75", "4.00", "0.880"],
+          ["Linear regression", "11.03", "8.90", "0.557"],
+          ["KNN (k = 5)", "11.04", "8.08", "0.556"],
+          ["Cement-only linear", "14.37", "—", "0.248"],
+          ["Mean guess", "16.57", "—", "—"]
+        ],
+        "highlightRow": 0
+      },
+      "paragraphs": [
+        "XGBoost won with 250 trees of depth 4, a learning rate of 0.10 and 80% row and column sampling. That is 6.2 MPa (56%) lower RMSE than the linear baseline."
+      ],
+      "figure": {
+        "src": "/images/Concrete/Stage2_FigB_controlled_comparison_RMSE.png",
+        "alt": "Bar chart of validation RMSE for all seven models, XGBoost lowest",
+        "caption": "Stage 2 Fig. B: validation RMSE for every model"
+      }
+    },
+    {
+      "heading": "Findings",
+      "bullets": [
+        "The trees fixed the age problem: XGBoost's errors sit around zero at every age, unlike linear regression's. Its biggest misses are at 7 and 28 days, the ages with the most samples.",
+        "Validation is probably a little optimistic. 155 of the 206 validation rows share a recipe with a training row (tested at a different age). XGBoost scores 4.69 MPa RMSE on those and 5.24 MPa on the 51 recipes it has never seen.",
+        "The MLP was still improving at epoch 400, but its gap kept widening (2.89 MPa training vs 5.70 MPa validation), so it was learning the training rows more than the pattern."
+      ],
+      "figure": {
+        "src": "/images/Concrete/Stage2_FigC_finalist_residuals_by_age.png",
+        "alt": "Scatter of XGBoost validation residuals against age on a log scale, centred on zero",
+        "caption": "Stage 2 Fig. C: XGBoost's errors by age"
+      }
+    },
+    {
+      "heading": "Next",
+      "bullets": [
+        "Score the saved XGBoost model once on the reserved test set.",
+        "Check unseen-recipe performance properly with a split grouped by recipe."
+      ]
+    }
+  ]
+}

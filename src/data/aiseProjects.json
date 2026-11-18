@@ -12,7 +12,44 @@
     "images": ["/images/superangel-thumb.png"],
     "station": "desk",
     "object": "ColdEmailerWindow",
-    "private": false
+    "private": false,
+    "cardMeta": "Python · CLI tool · Feb 2026",
+    "blurb": "A CLI outreach assistant that scrapes the Superangel 500 list, sorts it into EE and AI/software leads, sends personalised applications and tracks the whole funnel in CSV.",
+    "lede": "A command-line assistant that turns a scraped list of about 680 Estonian startups into a prioritised application queue, and keeps track of what happened to each one.",
+    "writeup": [
+      {
+        "heading": "The problem",
+        "paragraphs": [
+          "Applying to a few hundred startups is mostly administrative work: figure out which companies are worth approaching, send a tailored note with a resume attached, and remember three weeks later whether you ever heard back. The judgement is worth your time. The bookkeeping isn't."
+        ]
+      },
+      {
+        "heading": "How it works",
+        "paragraphs": [
+          "A scraper pulls company data from the Superangel 500 list's JSON endpoint, and a parsing step sorts it by industry into three lists: electrical engineering, AI/software, and companies that fit both.",
+          "The queue is prioritised rather than alphabetical: companies that fit both come first, then it moves on to the specialised lists. When you pull the next lead, the tool shows the metrics worth knowing before you write to them (headcount, turnover change, unicorn status), fills the email template with the company's industry and growth, and sends it with the resume attached over Gmail SMTP."
+        ]
+      },
+      {
+        "heading": "Tracking the funnel",
+        "paragraphs": [
+          "Every application is written to a CSV tracker and moves through four states:"
+        ],
+        "bullets": [
+          "Applied: first email sent",
+          "Interview: callback received",
+          "Rejected: closed",
+          "Accepted: offer"
+        ]
+      },
+      {
+        "heading": "Conversion stats",
+        "paragraphs": [
+          "The tool reports conversion statistics and the remaining lead count on demand, which makes the process legible: you can see whether the problem is the size of the list or the quality of the message. Credentials live in a local, untracked file, so the repository never carries them."
+        ]
+      }
+    ],
+    "takeaway": "A tool built for one person's workflow, which is exactly why it could be opinionated: the priority ordering encodes what I actually cared about rather than trying to be general."
   },
   {
     "id": "concrete-model",
@@ -21,13 +58,15 @@
     "role": "DS3000 group project (Group 07)",
     "summary": "Predicts concrete compressive strength from the mix recipe and age, using an OpenML dataset of 1,030 mixes split 618 / 206 / 206. I wrote the Stage 2 XGBoost model: the hyperparameter search, the pipeline and the evaluation.",
     "tech": ["Python", "scikit-learn", "XGBoost", "pandas", "Jupyter"],
-    "results": ["Validation RMSE 4.9 MPa, R² 0.91", "Best baseline (multiple linear regression): 11.0 MPa"],
+    "results": ["Validation RMSE 4.83 MPa, R² 0.915", "Best baseline (multiple linear regression): 11.03 MPa, so 56% lower error"],
     "links": [],
     "dates": "Fall 2026",
-    "images": [],
+    "images": ["/images/Concrete/Stage2_FigB_controlled_comparison_RMSE.png", "/images/Concrete/Stage2_FigC_finalist_residuals_by_age.png"],
     "station": "desk",
     "object": "ConcreteModelWindow",
-    "private": true
+    "private": true,
+    "cardMeta": "Machine learning · DS3000 · Fall 2026",
+    "blurb": "An XGBoost model that predicts concrete compressive strength from the mix recipe and age, with a validation RMSE of 4.83 MPa against 11.03 MPa for the best baseline."
   },
   {
     "id": "squat-tracker",
@@ -42,6 +81,91 @@
     "images": ["/images/squat-tracker-web.jpg"],
     "station": "desk",
     "object": "SquatTrackerWindow",
-    "private": false
+    "private": false,
+    "cardMeta": "Personal project · February 2024 – present",
+    "blurb": "A custom-trained YOLOv8 keypoint model that follows the barbell through a set, paired with a rep-segmentation algorithm that scores each rep on how straight the bar travelled.",
+    "lede": "A computer vision tool that watches a set of squats, finds the barbell in every frame, splits the video into individual reps, and scores each one on how straight the bar travelled.",
+    "credit": "Built with Hanjing Lin. The detection model and training notebook were developed jointly; the dataset comes from Roboflow Universe.",
+    "writeup": [
+      {
+        "heading": "The idea",
+        "paragraphs": [
+          "Bar path is one of the few things about a squat you can measure from a phone camera and still say something useful about. A rep where the bar travels straight up and down is generally a rep where the lifter stayed balanced over midfoot; a bar path that loops forward usually means something broke down. So rather than trying to assess the whole body, this tool tracks one object very well."
+        ]
+      },
+      {
+        "heading": "Training the detector",
+        "paragraphs": [
+          "The barbell is found by a custom-trained YOLOv8 pose model that predicts two keypoints on the bar, with no markers needed. Annotation was done in Roboflow, and training and validation ran on GPU in Google Colab. A keypoint model matters here: a box around a barbell tells you roughly where it is, while keypoints give a consistent point on the bar from frame to frame, which is what a path measurement needs. The midpoint of the two keypoints traces the bar path.",
+          "The training notebook handles the unglamorous parts too: unpacking the dataset, splitting it 80/10/10 into train, validation and test with a fixed seed so runs are comparable, and writing the data.yaml the trainer expects."
+        ]
+      },
+      {
+        "heading": "From detections to a score",
+        "paragraphs": [
+          "A detection per frame is just a set of points over time. Rep segmentation turns that into structure, finding where each rep begins and ends from the vertical motion of the bar, and then scores each rep by how linear the bar's path was through it.",
+          "That linearity score is a proxy, not a verdict. It captures one real part of squat quality and says nothing about the rest, which I think is the honest framing for a tool like this."
+        ]
+      },
+      {
+        "heading": "Status",
+        "paragraphs": [
+          "Ongoing. The detector works; the current work is on making the whole pipeline usable on ordinary phone footage rather than well-framed gym video."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "smartics",
+    "name": "SmartIcs: AI Student Calendar",
+    "pitch": "Turns a course syllabus into a calendar, with study blocks scheduled around your teams' games.",
+    "role": "Two-person project, with Shaan Wrench",
+    "summary": "SmartIcs parses deadlines out of a syllabus with Gemini, pulls in the fixtures for your sports teams, and generates study blocks around both, then exports everything to Google Calendar or an .ics file. I built the sports schedule integration and worked on the Google Calendar export.",
+    "tech": ["Python", "Gemini API", "Google Calendar API", "TheSportsDB", "SportsRadar"],
+    "results": [],
+    "links": [],
+    "dates": "Feb – Apr 2026",
+    "images": ["/images/smartics-thumb.png"],
+    "station": null,
+    "object": null,
+    "private": false,
+    "cardMeta": "Python · February – April 2026",
+    "blurb": "Parses deadlines out of a syllabus with Gemini, pulls in your teams' fixtures, and generates study blocks around both. I built the sports schedule integration and the Google Calendar export.",
+    "lede": "Hand it a syllabus and it gives you back a term. SmartIcs parses academic deadlines out of a PDF, pulls in your teams' fixtures, schedules study blocks around everything else, and exports the result to Google Calendar or an .ics file.",
+    "credit": "Shaan Wrench built the Gemini syllabus parser and the study block generator, and worked on the Calendar integration with me.",
+    "writeup": [
+      {
+        "heading": "The problem",
+        "paragraphs": [
+          "Every course hands you a syllabus with every deadline in it, and every student retypes those deadlines into a calendar by hand, or doesn't, and finds out in week nine. Meanwhile the things you actually plan your week around, like whether your team is playing on Saturday afternoon, live somewhere else entirely.",
+          "SmartIcs pulls all of it into one calendar and schedules study time around what's already there."
+        ]
+      },
+      {
+        "heading": "What it does",
+        "bullets": [
+          "Parses syllabi from PDF or plain text with Gemini, extracting exams, assignments and their dates",
+          "Fetches live fixtures for your chosen sports teams",
+          "Generates study blocks in the gaps, placed around existing commitments rather than on top of them",
+          "Exports to Google Calendar directly, or to a local .ics file",
+          "Colour-codes by type (exams, assignments, games, study blocks) so the shape of a week is readable at a glance"
+        ]
+      },
+      {
+        "heading": "My part",
+        "paragraphs": [
+          "I built the sports schedule integration, working against TheSportsDB and SportsRadar to fetch fixtures for a user's teams and turn them into the shared event model the rest of the pipeline uses.",
+          "I also worked on the Google Calendar API integration: the export path that takes the finished set of events and writes it into a real calendar, including the OAuth flow and the colour mapping."
+        ]
+      },
+      {
+        "heading": "How it fits together",
+        "paragraphs": [
+          "One shared Event model, and one service per data source that knows how to produce those events: a syllabus parser, a sports fixture fetcher, a study block generator and a calendar exporter, driven by an interactive CLI.",
+          "Because every source produces the same Event type, conflict detection and study block placement only have to reason about one kind of object. Adding another source later means writing one more fetcher, not touching the scheduler."
+        ]
+      }
+    ],
+    "takeaway": "Study blocks can only be generated after everything else is known. The generator runs last, against a calendar that already holds the deadlines and the fixtures, so it fills real gaps rather than proposing a schedule that collides with a game."
   }
 ]

@@ -78,10 +78,11 @@ function StartGlyph() {
 // The apps: one per software project. The ids match src/data/aiseProjects.json.
 // ---------------------------------------------------------------------------
 const APPS = [
-  // isInteractive: the window is used, not just looked at, so clicking inside it doesn't reopen its card
-  { id: 'cold-emailer', iconLabel: 'Cold Emailer', windowTitle: 'Cold Emailer: python main.py', className: 'app-window is-mail', Glyph: MailGlyph, Content: ColdEmailerWindow, isInteractive: true },
-  { id: 'concrete-model', iconLabel: 'Concrete Model', windowTitle: 'concrete_strength.ipynb', className: 'app-window is-notebook', Glyph: NotebookGlyph, Content: ConcreteModelWindow },
-  { id: 'squat-tracker', iconLabel: 'Squat Tracker', windowTitle: 'Squat Tracker', className: 'app-window is-tracker', Glyph: TrackerGlyph, Content: SquatTrackerWindow },
+  // isInteractive: the window is used, not just looked at, so clicking inside it doesn't reopen its card.
+  // hint: what the taskbar says while that window is open.
+  { id: 'cold-emailer', iconLabel: 'Cold Emailer', windowTitle: 'Cold Emailer: python main.py', className: 'app-window is-mail', Glyph: MailGlyph, Content: ColdEmailerWindow, isInteractive: true, hint: 'type in the window to use it' },
+  { id: 'concrete-model', iconLabel: 'Concrete Model', windowTitle: 'concrete_strength_report.ipynb', className: 'app-window is-notebook', Glyph: NotebookGlyph, Content: ConcreteModelWindow, isInteractive: true, hint: 'scroll the report to read it' },
+  { id: 'squat-tracker', iconLabel: 'Squat Tracker', windowTitle: 'Bar Path Live: python src/bar_path.py', className: 'app-window is-tracker', Glyph: TrackerGlyph, Content: SquatTrackerWindow, isInteractive: true, hint: 'try the buttons, or keys l a c space' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -110,7 +111,7 @@ export default function Desktop({ focusId, onOpenApp }) {
   const openApp = APPS.find((app) => app.id === openAppId);
 
   let taskbarHint = 'click an app to open it';
-  if (openApp) taskbarHint = openApp.isInteractive ? 'type in the window to use it' : 'click the window to read about it';
+  if (openApp) taskbarHint = openApp.hint ?? 'click the window to read about it';
 
   // Opens the app's window on the screen and its Project Card beside it
   const launchApp = (event, appId) => {
@@ -157,7 +158,8 @@ export default function Desktop({ focusId, onOpenApp }) {
             </span>
           </div>
           {openApp.isInteractive ? (
-            <div className="app-content is-interactive">
+            // Clicks inside a used window must not reach the 3D scene, where a click on nothing closes the card
+            <div className="app-content is-interactive" onClick={(event) => event.stopPropagation()}>
               <openApp.Content />
             </div>
           ) : (

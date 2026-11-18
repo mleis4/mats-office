@@ -16,7 +16,7 @@
  * ============================================================================
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useThree } from '@react-three/fiber';
 import { Html, RoundedBox } from '@react-three/drei';
@@ -103,10 +103,9 @@ function Led({ position, colour, isOn, label, radius = 0.028 }) {
         />
       </mesh>
 
-      {/* Light spill onto the board when lit */}
-      {isOn && (
-        <pointLight position={[0, BOARD_TOP + 0.06, 0]} color={colour} intensity={0.25} distance={0.35} />
-      )}
+      {/* No pointLight here: adding or removing a light changes the scene's
+          light count, which makes three.js recompile every material and
+          froze the page on each clock tick. The emissive dome is enough. */}
 
       <SilkLabel text={label} position={[0, BOARD_TOP + 0.001, 0.07]} width={0.12} height={0.04} />
     </group>
@@ -337,7 +336,8 @@ function FpgaChip() {
   );
 }
 
-function BoardDetails() {
+// Memoised: it has no props, so clocking bits never re-renders its ~250 meshes
+const BoardDetails = memo(function BoardDetails() {
   const headerPinXs = useMemo(
     () => Array.from({ length: HEADER_PIN_COUNT }, (_, pinIndex) => HEADER_FIRST_PIN_X + pinIndex * HEADER_PIN_PITCH),
     [],
@@ -441,7 +441,7 @@ function BoardDetails() {
       )))}
     </group>
   );
-}
+});
 
 // ---------------------------------------------------------------------------
 // MiniStateMap: eight states in two rows (Z = 0 on top, Z = 1 below),
@@ -617,8 +617,12 @@ export default function FsmDetector({ showPanel = true, panelPosition = [0, 0.48
       {/* ---------------- Info panel ---------------- */}
       {showPanel && (
         <Html portal={panelPortalRef} position={panelPosition} center distanceFactor={1.4} zIndexRange={[20, 0]}>
+          {/* Stop clicks here: the panel sits over empty canvas, so R3F would
+              treat them as missed clicks and close the focus */}
           <div
             data-testid="fsm-panel"
+            onClick={(event) => event.stopPropagation()}
+            onPointerDown={(event) => event.stopPropagation()}
             style={{
               width: 300,
               padding: 14,

@@ -12,7 +12,24 @@
     "images": ["/images/projects/Robocup.jpeg", "/images/projects/Robocup(1).jpeg"],
     "station": "bench",
     "object": "SpikeRobot",
-    "private": false
+    "private": false,
+    "cardMeta": "High-school robotics · 2022 – 2023",
+    "lede": "The robot that got me into electrical engineering, and the first time I learned that a design nobody has power-budgeted is a design that might not turn on.",
+    "writeup": [
+      {
+        "heading": "The robot",
+        "paragraphs": [
+          "Our main RoboCup Jr. Rescue robot ran on an Arduino Mega with an OpenMV H7 camera for computer vision, an MPU6050 IMU, a TCS34725 colour sensor, an HC-SR04 ultrasonic sensor and an IR line array. I helped design it and did some of the programming."
+        ]
+      },
+      {
+        "heading": "The day before regionals",
+        "paragraphs": [
+          "We had never calculated the robot's total current draw. The day before regionals, it would not run with everything connected. We switched to our LEGO SPIKE backup robot, and with it qualified for Team Canada at RoboCup Jr. Worlds in July 2023."
+        ]
+      }
+    ],
+    "takeaway": "Power budgeting matters. It is the same thread that runs through my later power-architecture work on Sunstang and at GlobalReader."
   },
   {
     "id": "fsm-detector",
@@ -27,7 +44,36 @@
     "images": ["/images/fpga-thumb.png"],
     "station": "bench",
     "object": "FsmDetector",
-    "private": false
+    "private": false,
+    "cardMeta": "Digital logic · ECE 2277A · Fall 2025",
+    "blurb": "A gate-level sequence detector built in Quartus, with the state assignment reworked by adjacency rules and shared terms to cut the circuit cost from 60 to 51.",
+    "lede": "A finite state machine that recognises patterns in a bit stream, designed on paper first and then built structurally from logic gates.",
+    "writeup": [
+      {
+        "heading": "Design before synthesis",
+        "paragraphs": [
+          "The point of this project was to do the work a synthesiser would normally hide. Rather than describing the behaviour in HDL and letting the tools infer a machine, I derived the state diagram, the state transition table and the logic equations by hand, then implemented the result structurally in Quartus.",
+          "It is an 8-state Moore machine built from three D flip-flops. The output Z goes HIGH after the input contains 0011 and back LOW after 0101, or on reset. A Moore machine was the right shape here: the output depends only on the current state, so it is stable for the whole clock cycle rather than following the input glitch for glitch."
+        ]
+      },
+      {
+        "heading": "Optimising the state assignment",
+        "paragraphs": [
+          "Which binary code you assign to each state isn't cosmetic: it decides how complex the next-state logic ends up. This is the part that doesn't show up in a simulation waveform but shows up immediately in the gate count."
+        ],
+        "bullets": [
+          "Gray-code assignment: circuit cost 60",
+          "Adjacency-rule assignment: cost 54",
+          "Shared product terms between the equations: final cost 51, 15% lower than the starting point"
+        ]
+      },
+      {
+        "heading": "Validation",
+        "paragraphs": [
+          "The detector was fed a controlled bit stream through a shift register and checked for asserting on the target sequence and staying quiet on near-misses, including overlapping patterns."
+        ]
+      }
+    ]
   },
   {
     "id": "sunstang-board",
@@ -42,7 +88,49 @@
     "images": ["/images/sunstang-thumb.png"],
     "station": "bench",
     "object": "SunstangBoard",
-    "private": false
+    "private": false,
+    "cardMeta": "Western Sunstang Solar Car · Driver Controls · 2025",
+    "blurb": "Led the team's move off Nucleo prototyping onto a custom four-layer STM32 board that connects the driver's inputs, the powertrain and the safety-critical CAN network, built for signal integrity under vibration and hand assembly by students.",
+    "lede": "Moving Western Sunstang's driver controls off a Nucleo breakout and onto a purpose-built four-layer board: one that has to survive vibration, share a bus with safety-critical systems, and still be assembled by students with a soldering iron.",
+    "writeup": [
+      {
+        "heading": "From breakout board to real hardware",
+        "paragraphs": [
+          "Driver controls had been running on an STM32 Nucleo-F302R8 development board with wiring looms into the rest of the car. That's a reasonable way to prototype and a poor way to race: the connections are fragile, the layout is whatever the jumper wires happen to do that day, and there's no control over the electrical environment.",
+          "I led the move to a custom STM32 board that connects the driver's inputs, the powertrain and the car's safety-critical CAN network on one piece of hardware."
+        ]
+      },
+      {
+        "heading": "CAN physical layer",
+        "paragraphs": [
+          "CAN is where a solar car's subsystems agree with each other, so the physical layer had to be deliberate rather than incidental:"
+        ],
+        "bullets": [
+          "Impedance-aware differential routing for the CAN pair",
+          "Selectable 120 Ω termination, so the same board can sit at the end of the bus or in the middle of it without rework",
+          "Physical-layer choices aimed at holding signal integrity under the vibration the car actually sees"
+        ]
+      },
+      {
+        "heading": "Power and noise",
+        "paragraphs": [
+          "The board runs from the car's 12 V rail down to 3.3 V logic through a switching regulator, with bulk capacitance and per-device decoupling sized to keep the logic supply quiet.",
+          "Switching regulators pay for their efficiency in noise, so the stackup does the rest of the work: four layers with dedicated power and ground planes, which cuts EMI and gives return currents a low-impedance path directly under their signals instead of a long detour."
+        ]
+      },
+      {
+        "heading": "Built to be debugged",
+        "paragraphs": [
+          "Firmware work on a student team happens in a garage, often at night, often by whoever is free. The board carries USB-UART, an SWD header and diagnostic LEDs, so bringing up firmware and isolating a fault don't need specialist equipment or the one person who owns the debugger."
+        ]
+      },
+      {
+        "heading": "Designed for a student team",
+        "paragraphs": [
+          "Every footprint decision was a trade between routing density and whether a team member can actually place the part by hand. I kept the design hand-solderable where it mattered and accepted the extra routing complexity that came with it. A board the team can build and repair beats a denser one they can't."
+        ]
+      }
+    ]
   },
   {
     "id": "globalreader",
@@ -57,6 +145,63 @@
     "images": ["/images/globalreader-thumb.png"],
     "station": "bench",
     "object": "GlobalReaderBoards",
-    "private": false
+    "private": false,
+    "cardMeta": "GlobalReader · Tartu, Estonia · May – August 2026",
+    "blurb": "As the sole in-house hardware engineer, I rebuilt two production boards from scratch in KiCad, replacing an outside contractor's design. Fixed a WiFi-transmit thermal defect, cut power loss on the 24 V input, and set up the JLCPCB manufacturing pipeline.",
+    "lede": "Two production boards, a radio board and the baseboard it plugs onto, rebuilt from scratch in KiCad to replace an outside contractor's design that was expensive to build and ran hot under load.",
+    "viewer": {
+      "heading": "The board stack in 3D",
+      "intro": "Both boards as they fit together: the radio board plugs onto the baseboard as a shield. Pull them apart, or look at each board on its own. Click the model to take control, then drag to rotate, scroll to zoom and right-drag to pan.",
+      "caption": "The baseboard sits connector-side up. The radio board goes on face-down, turned a quarter turn, so its 3-pin power header and 8-pin comms header drop into the baseboard's two sockets.",
+      "ariaLabel": "Interactive 3D model of the GlobalReader radio board and baseboard",
+      "fallbackImage": "/images/globalreader-thumb.png",
+      "fallbackAlt": "Pinout render of the GlobalReader radio board"
+    },
+    "writeup": [
+      {
+        "heading": "Context",
+        "paragraphs": [
+          "The existing hardware had been designed by an outside contractor. It worked, but it carried the usual costs of a design nobody in the building owned: component choices that didn't match their datasheets, a power architecture with no headroom, and a thermal problem that only showed up under WiFi transmit.",
+          "I joined as the sole in-house hardware engineer and took both boards back to a blank schematic in KiCad."
+        ]
+      },
+      {
+        "heading": "Radio board: cellular and WiFi",
+        "paragraphs": [
+          "The radio board pairs an LTE-M cellular module with an ESP32-WROOM-32UE for WiFi, and plugs onto the baseboard as a shield. Reviewing the original against the manufacturers' datasheets turned up several parts specified outside their recommended operating conditions. Correcting those choices cut the bill of materials and made the board easier to manufacture at the same time: the cheaper part was usually also the one the reference design called for."
+        ]
+      },
+      {
+        "heading": "Baseboard: power architecture",
+        "paragraphs": [
+          "The original baseboard stepped 24 V down in two stages, 24 V → 4 V → 3.3 V, and the 3.3 V stage overheated during WiFi transmit bursts. I replaced it with a single-regulator path:"
+        ],
+        "bullets": [
+          "One regulator instead of two",
+          "More current headroom on the 3.3 V rail",
+          "The WiFi-transmit thermal defect gone, because the stage that had been dissipating the heat was gone"
+        ]
+      },
+      {
+        "heading": "Input protection",
+        "paragraphs": [
+          "The 24 V input had been protected by a Schottky diode pair: simple, but it burned real power as heat across the diode drop. I replaced it with an LM74700 ideal-diode circuit, which gives the same reverse-polarity protection at a fraction of the dissipation, and added SMBJ58A / SMBJ26A surge protection."
+        ]
+      },
+      {
+        "heading": "High-speed routing",
+        "paragraphs": [
+          "Ethernet and antenna traces were routed with controlled impedance and via stitching along the return paths, keeping the reference plane continuous under the high-speed signals rather than letting return current detour around splits."
+        ]
+      },
+      {
+        "heading": "Bring-up and manufacturing",
+        "paragraphs": [
+          "I debugged the first boards by capturing UART traffic on an oscilloscope. The fault turned out to be firmware, fixed by reflashing.",
+          "Design work only matters if the boards come back correct, so I also built the manufacturing pipeline end to end: KiKit panelisation, scripts for the BOM and placement files JLCPCB needs for assembly, and kicad-cli exports. The handoff became a set of files rather than a conversation."
+        ]
+      }
+    ],
+    "takeaway": "Most of the wins weren't clever circuit tricks. They came from reading the datasheets the original design had skimmed, and from removing a stage rather than adding one."
   }
 ]

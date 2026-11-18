@@ -112,9 +112,11 @@ const wallFocus = ([x, y, z], distance = 1.5, lift = 0) => ({
 });
 
 const SCREEN_CENTRE = [RIGHT_WALL_X - 0.38, 1.22, DESK.z];
+// Back and a little above the screen, tipped down so the keyboard and
+// mouse fit under it: the frame runs from the webcam to the keyboard's front edge
 const monitorFocus = {
-  position: [SCREEN_CENTRE[0] - 1.02, 1.24, DESK.z],
-  target: SCREEN_CENTRE,
+  position: [SCREEN_CENTRE[0] - 1.25, 1.45, DESK.z],
+  target: [SCREEN_CENTRE[0], 1.06, DESK.z],
   shift: [0, 0, 0.17],
 };
 

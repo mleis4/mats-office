@@ -49,7 +49,10 @@ function detectWebGL() {
   }
 }
 
-const isTypingTarget = (element) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(element?.tagName);
+// #2d is the 2D home page and #2d/<id> a project write-up
+const isHash2D = () => window.location.hash === '#2d' || window.location.hash.startsWith('#2d/');
+
+const isTypingTarget =(element) => ['INPUT', 'TEXTAREA', 'SELECT'].includes(element?.tagName);
 const isControl = (element) => Boolean(element?.closest?.('button, a'));
 
 // ---------------------------------------------------------------------------
@@ -62,7 +65,7 @@ export default function App() {
     [],
   );
 
-  const [is2D, setIs2D] = useState(() => window.location.hash === '#2d');
+  const [is2D, setIs2D] = useState(isHash2D);
   const [hasEntered, setHasEntered] = useState(false);
   const [station, setStation] = useState('door');
   const [focusId, setFocusId] = useState(null);
@@ -130,7 +133,7 @@ export default function App() {
 
   // ---------------- 2D view follows the URL hash ----------------
   useEffect(() => {
-    const syncWithHash = () => setIs2D(window.location.hash === '#2d');
+    const syncWithHash = () => setIs2D(isHash2D());
     window.addEventListener('hashchange', syncWithHash);
     return () => window.removeEventListener('hashchange', syncWithHash);
   }, []);
@@ -218,7 +221,7 @@ export default function App() {
 
   // ---------------- 2D page ----------------
   if (show2D) {
-    return <Projects2D canUse3D={canUse3D} nowPlaying={nowPlaying} />;
+    return <Projects2D canUse3D={canUse3D} />;
   }
 
   // ---------------- 3D office ----------------

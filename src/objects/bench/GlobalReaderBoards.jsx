@@ -20,24 +20,13 @@ import { useGLTF } from '@react-three/drei';
 import Selectable from '../Selectable';
 import useFittedModel from '../useFittedModel';
 import { useScene } from '../../scene/SceneContext';
-
-const BASE_BOARD_URL = '/models/BaseBoard.glb';
-const RADIO_BOARD_URL = '/models/RadioBoard.glb';
+import {
+  BASE_BOARD_URL, BASE_ROTATION, RADIO_BOARD_URL, SHIELD_OFFSET_X, SHIELD_OFFSET_Z,
+  SHIELD_ROTATION, SHIELD_SEAT_HEIGHT,
+} from './globalReaderStack';
 
 const ASSEMBLY_WIDTH = 0.5;            // scene width of the baseboard (stylised, larger than life)
-
-// Where the shield sits on the baseboard, in the models' own units (metres).
-// The two exports don't share an origin, so these were tuned by eye.
-const SHIELD_SEAT_HEIGHT = 0.006;      // bench surface to the tips of the shield's pins
-const SHIELD_OFFSET_X = 0.0077;
-const SHIELD_OFFSET_Z = -0.0145;
-const SHIELD_LIFT = 0.03;            // extra height when the shield is lifted off
-
-// The baseboard sits connector-side up. The shield goes on face-down and
-// turned a quarter turn, so its two pin headers drop into the baseboard's
-// two sockets (3-pin power at the back, 8-pin comms at the front).
-const BASE_ROTATION = [Math.PI, 0, 0];
-const SHIELD_ROTATION = [Math.PI, -Math.PI / 2, 0, 'YXZ'];
+const SHIELD_LIFT = 0.03;              // extra height when the shield is lifted off
 
 export default function GlobalReaderBoards(groupProps) {
   const { focusId } = useScene();

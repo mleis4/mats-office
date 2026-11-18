@@ -1,0 +1,41 @@
+{
+  "documentTitle": "Mats Leis · Electrical & AI Systems Engineering",
+  "heroLede": "Electrical & AI Systems Engineering student at Western University. I design production PCBs (RF, power and embedded control) and build the software that runs on them.",
+  "sections": {
+    "work": {
+      "eyebrow": "Featured work",
+      "heading": "Hardware that shipped, and the software around it",
+      "intro": "Three projects that best show how I work: from schematic capture through manufacturing, and from dataset to trained model."
+    },
+    "projects": {
+      "eyebrow": "Projects",
+      "heading": "Other things I've built",
+      "intro": "Smaller builds, coursework and tools."
+    },
+    "skills": {
+      "eyebrow": "Skills",
+      "heading": "What I work with"
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "heading": "Get in touch",
+      "intro": "I'm open to internship and co-op conversations in hardware, embedded systems and applied ML."
+    }
+  },
+  "featured": ["globalreader", "sunstang-board", "squat-tracker"],
+  "projects": ["fsm-detector", "cold-emailer", "concrete-model", "smartics", "robocup-robot"],
+  "skills": [
+    {
+      "group": "Hardware",
+      "items": ["KiCad", "PCB design & simulation", "Schematic capture", "Multi-layer stackups", "Controlled impedance", "Power supply design", "DFM / JLCPCB", "Soldering & rework"]
+    },
+    {
+      "group": "Embedded",
+      "items": ["STM32", "ESP32", "C", "CAN bus", "UART / SPI / I²C", "SWD debugging", "FPGA / Quartus"]
+    },
+    {
+      "group": "Software & tools",
+      "items": ["Python", "Java", "YOLO / Ultralytics", "OpenCV", "scikit-learn / XGBoost", "Roboflow", "Git", "CAD", "3D printing"]
+    }
+  ]
+}

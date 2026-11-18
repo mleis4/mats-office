@@ -13,11 +13,14 @@
  * ============================================================================
  */
 
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import * as THREE from 'three';
 import { Html, RoundedBox } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { BookStack, Candle, CoffeeMug, DeskPlant, NotebookAndPen } from '../objects/desk/DeskDecor';
-import { DESK_MAT_THICKNESS, DeskMat, Keyboard, Mouse } from '../objects/desk/Peripherals';
+import { DESK_MAT_THICKNESS, DeskMat } from '../objects/desk/Peripherals';
+import TypingKeyboard from '../objects/desk/TypingKeyboard';
+import ModelProp from '../objects/ModelProp';
 import Desktop, { DESKTOP_WIDTH_PX } from '../objects/monitor/Desktop';
 import { useScene } from '../scene/SceneContext';
 import { DESK_TOP_Y, OBJECTS, SCREEN } from '../scene/stations';
@@ -33,12 +36,71 @@ const WALLPAPER_NAVY = '#141e33';
 // visitor's right, +Z is toward the visitor, and y = 0 is the desk top.
 const DESK_MAT = { x: 0.08, z: 0.33, width: 0.92, depth: 0.36 };
 const KEYBOARD_SPOT = [0, DESK_MAT_THICKNESS, 0.33];
-const MOUSE_SPOT = [0.38, DESK_MAT_THICKNESS, 0.33];
+const KEYBOARD_WIDTH = 0.3; // a real 60% board is about 29 cm wide
+const MOUSE_SPOT = [0.3, DESK_MAT_THICKNESS, 0.34];
+const MOUSE_LENGTH = 0.12;
 const PLANT_SPOT = [0.73, 0, -0.05];
 const NOTEBOOK_SPOT = [0.7, 0, 0.3];
 const BOOKS_SPOT = [-0.73, 0, -0.09];
 const CANDLE_SPOT = [-0.83, 0, 0.19];
 const MUG_SPOT = [-0.6, 0, 0.26];
+
+// How far the mouse slides on the mat when the cursor goes from the screen's
+// centre to its edge (metres), and how quickly it catches up
+const MOUSE_TRAVEL = { x: 0.06, z: 0.04 };
+const MOUSE_FOLLOW_SPEED = 14;
+
+// ---------------------------------------------------------------------------
+// useMouseFollowsCursor
+// While the desktop is live, the desk mouse slides on the mat to match where
+// the visitor's cursor is on the screen: right on the screen = right on the
+// mat, up on the screen = pushed away. The cursor is found by casting a ray
+// from the camera onto the screen, so it works over the DOM desktop too.
+// When the cursor leaves the screen the mouse stays put, like a real one.
+// Returns the refs to put on the screen mesh and on the mouse's group.
+// ---------------------------------------------------------------------------
+function useMouseFollowsCursor(isActive) {
+  const screenRef = useRef();
+  const mouseRef = useRef();
+  const canvasElement = useThree((state) => state.gl.domElement);
+  const camera = useThree((state) => state.camera);
+
+  const pointer = useRef(null); // the cursor in normalised device coordinates
+  const goalOffset = useRef({ x: 0, z: 0 });
+  const raycaster = useMemo(() => new THREE.Raycaster(), []);
+
+  useEffect(() => {
+    const trackPointer = (event) => {
+      const bounds = canvasElement.getBoundingClientRect();
+      pointer.current = new THREE.Vector2(
+        ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+        -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
+      );
+    };
+    window.addEventListener('pointermove', trackPointer);
+    return () => window.removeEventListener('pointermove', trackPointer);
+  }, [canvasElement]);
+
+  useFrame((_, deltaSeconds) => {
+    const mouse = mouseRef.current;
+    if (!mouse || !screenRef.current) return;
+
+    if (isActive && pointer.current) {
+      raycaster.setFromCamera(pointer.current, camera);
+      const hit = raycaster.intersectObject(screenRef.current)[0];
+      if (hit?.uv) {
+        goalOffset.current.x = (hit.uv.x - 0.5) * 2 * MOUSE_TRAVEL.x;
+        goalOffset.current.z = -(hit.uv.y - 0.5) * 2 * MOUSE_TRAVEL.z;
+      }
+    }
+
+    const blend = 1 - Math.exp(-MOUSE_FOLLOW_SPEED * Math.min(deltaSeconds, 0.1));
+    mouse.position.x += (MOUSE_SPOT[0] + goalOffset.current.x - mouse.position.x) * blend;
+    mouse.position.z += (MOUSE_SPOT[2] + goalOffset.current.z - mouse.position.z) * blend;
+  });
+
+  return { screenRef, mouseRef };
+}
 
 // drei's <Html transform> draws 40 CSS pixels per scene unit at scale 1
 const HTML_PIXELS_PER_UNIT = 40;
@@ -54,6 +116,8 @@ export default function Monitor() {
 
   const isDeskFocus = focusId ? OBJECTS[focusId]?.station === 'desk' : false;
   const showLiveDesktop = station === 'desk' && (!focusId || isDeskFocus);
+
+  const { screenRef, mouseRef } = useMouseFollowsCursor(showLiveDesktop);
 
   const deskSurfaceY = DESK_TOP_Y - SCREEN.centre[1]; // desk top, relative to the screen centre
   const panelWidth = SCREEN.width + BEZEL * 2;
@@ -97,7 +161,7 @@ export default function Monitor() {
       </RoundedBox>
 
       {/* Screen glow, always visible */}
-      <mesh position={[0, 0, -0.001]}>
+      <mesh ref={screenRef} position={[0, 0, -0.001]}>
         <planeGeometry args={[SCREEN.width, SCREEN.height]} />
         <meshBasicMaterial color={showLiveDesktop ? WALLPAPER_NAVY : '#2b4a86'} toneMapped={false} />
       </mesh>
@@ -112,8 +176,11 @@ export default function Monitor() {
       {/* ---------------- On the desk ---------------- */}
       <group position={[0, deskSurfaceY, 0]}>
         <DeskMat width={DESK_MAT.width} depth={DESK_MAT.depth} position={[DESK_MAT.x, 0, DESK_MAT.z]} />
-        <Keyboard position={KEYBOARD_SPOT} />
-        <Mouse position={MOUSE_SPOT} />
+        <TypingKeyboard width={KEYBOARD_WIDTH} position={KEYBOARD_SPOT} />
+        {/* The mouse model points its nose along +Z; turn it to face the monitor */}
+        <group ref={mouseRef} position={MOUSE_SPOT}>
+          <ModelProp url="/models/mouse.glb" depth={MOUSE_LENGTH} rotation={[0, Math.PI, 0]} />
+        </group>
 
         <DeskPlant position={PLANT_SPOT} />
         <NotebookAndPen position={NOTEBOOK_SPOT} rotation={[0, -0.18, 0]} />
